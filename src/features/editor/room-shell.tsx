@@ -52,6 +52,49 @@ export function RoomShell({ room: r }: { room: Scene["room"] }) {
     return texture;
   }, [r.width, r.depth]);
   useEffect(() => () => floorMap.dispose(), [floorMap]);
+  const wallpaper = useMemo(() => {
+    if (!r.wallpaper || r.wallpaper === "none") return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 256;
+    const ctx = canvas.getContext("2d")!;
+    ctx.fillStyle = r.wall;
+    ctx.fillRect(0, 0, 256, 256);
+    ctx.strokeStyle = r.wallpaperColor || "#8b9a7a";
+    ctx.fillStyle = r.wallpaperColor || "#8b9a7a";
+    if (r.wallpaper === "stripes") {
+      ctx.globalAlpha = 0.4;
+      ctx.fillRect(0, 0, 50, 256);
+      ctx.fillRect(128, 0, 50, 256);
+    } else if (r.wallpaper === "arches") {
+      ctx.globalAlpha = 0.6;
+      ctx.lineWidth = 4;
+      for (const x of [0, 128, 256]) {
+        ctx.beginPath();
+        ctx.arc(x, 128, 55, Math.PI, 0);
+        ctx.lineTo(x + 55, 256);
+        ctx.moveTo(x - 55, 128);
+        ctx.lineTo(x - 55, 256);
+        ctx.stroke();
+      }
+    } else {
+      ctx.globalAlpha = 0.16;
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 256; i += 4) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, 256);
+        ctx.moveTo(0, i);
+        ctx.lineTo(256, i);
+        ctx.stroke();
+      }
+    }
+    const texture = new CanvasTexture(canvas);
+    texture.wrapS = texture.wrapT = RepeatWrapping;
+    texture.colorSpace = SRGBColorSpace;
+    return texture;
+  }, [r.wallpaper, r.wallpaperColor, r.wall]);
+  useEffect(() => () => wallpaper?.dispose(), [wallpaper]);
+  const surfaces = r.wallpaperWall || "back";
   return (
     <group>
       <mesh receiveShadow castShadow position={[0, -0.07, 0]}>
@@ -78,6 +121,22 @@ export function RoomShell({ room: r }: { room: Scene["room"] }) {
         <boxGeometry args={[r.width, 0.12, 0.025]} />
         <meshStandardMaterial color="#f7f4ec" roughness={0.65} />
       </mesh>
+      {wallpaper && (surfaces === "back" || surfaces === "both") && (
+        <mesh position={[0, r.height / 2, -r.depth / 2 + 0.046]} receiveShadow>
+          <planeGeometry args={[r.width, r.height]} />
+          <meshStandardMaterial map={wallpaper} roughness={0.94} />
+        </mesh>
+      )}
+      {wallpaper && (surfaces === "left" || surfaces === "both") && (
+        <mesh
+          position={[-r.width / 2 + 0.046, r.height / 2, 0]}
+          rotation={[0, Math.PI / 2, 0]}
+          receiveShadow
+        >
+          <planeGeometry args={[r.depth, r.height]} />
+          <meshStandardMaterial map={wallpaper} roughness={0.94} />
+        </mesh>
+      )}
       <mesh position={[-r.width / 2 + 0.055, 0.06, 0]}>
         <boxGeometry args={[0.025, 0.12, r.depth]} />
         <meshStandardMaterial color="#f7f4ec" roughness={0.65} />

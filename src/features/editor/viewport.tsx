@@ -105,7 +105,24 @@ function retain(url: string, source: Group) {
   };
 }
 function Model({ asset, color }: { asset: AssetView; color?: string }) {
+  const { gl } = useThree();
   const { scene } = useGLTF(asset.secureUrl);
+  useEffect(() => {
+    // Mark actual parsed-model readiness, separate from the room's first frame.
+    const canvas = gl.domElement;
+    const loaded = new Set<string>(
+      JSON.parse(canvas.dataset.loadedModels || "[]"),
+    );
+    loaded.add(asset.id);
+    canvas.dataset.loadedModels = JSON.stringify([...loaded]);
+    return () => {
+      const current = new Set<string>(
+        JSON.parse(canvas.dataset.loadedModels || "[]"),
+      );
+      current.delete(asset.id);
+      canvas.dataset.loadedModels = JSON.stringify([...current]);
+    };
+  }, [gl, asset.id]);
   useEffect(() => retain(asset.secureUrl, scene), [asset.secureUrl, scene]);
   const copy = useMemo(() => {
     const object = clone(scene);
@@ -159,14 +176,14 @@ function Item({
   setDragging: (b: boolean) => void;
   onError: () => void;
 }) {
-  const ref = useRef<Group>(null);
+  const [target, setTarget] = useState<Group | null>(null);
   const selected = useEditor((s) => s.selected);
   const mode = useEditor((s) => s.mode);
   const snap = useEditor((s) => s.snap);
   const active = editable && selected === object.instanceId;
   const content = (
     <group
-      ref={ref}
+      ref={setTarget}
       position={object.position}
       rotation={object.rotation}
       scale={object.scale}
@@ -200,41 +217,43 @@ function Item({
   );
   return active ? (
     <>
-      <TransformControls
-        mode={mode}
-        translationSnap={snap ? 0.25 : null}
-        rotationSnap={snap ? Math.PI / 12 : null}
-        scaleSnap={snap ? 0.1 : null}
-        onMouseDown={() => setDragging(true)}
-        onMouseUp={() => {
-          setDragging(false);
-          const g = ref.current;
-          if (!g) return;
-          g.updateWorldMatrix(true, true);
-          const bounds = new Box3().setFromObject(g);
-          if (bounds.min.y < 0) g.position.y -= bounds.min.y;
-          const scale = g.scale
-            .toArray()
-            .map((v) => Math.max(0.01, Math.min(20, v))) as [
-            number,
-            number,
-            number,
-          ];
-          useEditor.getState().object(object.instanceId, {
-            position: g.position
+      {target && (
+        <TransformControls
+          object={target}
+          mode={mode}
+          translationSnap={snap ? 0.25 : null}
+          rotationSnap={snap ? Math.PI / 12 : null}
+          scaleSnap={snap ? 0.1 : null}
+          onMouseDown={() => setDragging(true)}
+          onMouseUp={() => {
+            setDragging(false);
+            const g = target;
+            if (!g) return;
+            g.updateWorldMatrix(true, true);
+            const bounds = new Box3().setFromObject(g);
+            if (bounds.min.y < 0) g.position.y -= bounds.min.y;
+            const scale = g.scale
               .toArray()
-              .map((v) => Math.max(-100, Math.min(100, v))) as [
+              .map((v) => Math.max(0.01, Math.min(20, v))) as [
               number,
               number,
               number,
-            ],
-            rotation: [g.rotation.x, g.rotation.y, g.rotation.z],
-            scale,
-          });
-        }}
-      >
-        {content}
-      </TransformControls>
+            ];
+            useEditor.getState().object(object.instanceId, {
+              position: g.position
+                .toArray()
+                .map((v) => Math.max(-100, Math.min(100, v))) as [
+                number,
+                number,
+                number,
+              ],
+              rotation: [g.rotation.x, g.rotation.y, g.rotation.z],
+              scale,
+            });
+          }}
+        />
+      )}
+      {content}
       <mesh
         position={[object.position[0], 0.008, object.position[2]]}
         rotation={[-Math.PI / 2, 0, 0]}

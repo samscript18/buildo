@@ -2,6 +2,25 @@ import { describe, it, expect } from "vitest";
 import { defaultScene, sceneSchema, phase } from "../src/lib/scene";
 import { useEditor } from "../src/features/editor/store";
 describe("scene boundary", () => {
+  it("preserves optional wallpaper choices without breaking existing rooms", () => {
+    expect(sceneSchema.parse(defaultScene).room.wallpaper).toBeUndefined();
+    const scene = {
+      ...defaultScene,
+      room: {
+        ...defaultScene.room,
+        wallpaper: "arches",
+        wallpaperWall: "back",
+        wallpaperColor: "#a5b391",
+      },
+    };
+    expect(sceneSchema.parse(scene).room).toEqual(scene.room);
+    expect(
+      sceneSchema.safeParse({
+        ...scene,
+        room: { ...scene.room, wallpaper: "external-url" },
+      }).success,
+    ).toBe(false);
+  });
   it("rejects non-finite and oversized scenes", () => {
     const s = structuredClone(defaultScene);
     s.room.width = Infinity;

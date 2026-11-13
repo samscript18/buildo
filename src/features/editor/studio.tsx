@@ -310,6 +310,67 @@ function Properties() {
           </label>
         ))}
         <label>
+          Wallpaper pattern
+          <select
+            value={s.scene.room.wallpaper || "none"}
+            onChange={(e) =>
+              s.edit({
+                ...s.scene,
+                room: {
+                  ...s.scene.room,
+                  wallpaper: e.target.value as typeof s.scene.room.wallpaper,
+                },
+              })
+            }
+          >
+            <option value="none">Paint only</option>
+            <option value="linen">Woven linen</option>
+            <option value="stripes">Quiet stripes</option>
+            <option value="arches">Soft arches</option>
+          </select>
+        </label>
+        {s.scene.room.wallpaper && s.scene.room.wallpaper !== "none" && (
+          <>
+            <label>
+              Wallpaper placement
+              <select
+                value={s.scene.room.wallpaperWall || "back"}
+                onChange={(e) =>
+                  s.edit({
+                    ...s.scene,
+                    room: {
+                      ...s.scene.room,
+                      wallpaperWall: e.target
+                        .value as typeof s.scene.room.wallpaperWall,
+                    },
+                  })
+                }
+              >
+                <option value="back">Back wall</option>
+                <option value="left">Left wall</option>
+                <option value="both">Both walls</option>
+              </select>
+            </label>
+            <label>
+              Wallpaper accent
+              <input
+                type="color"
+                value={s.scene.room.wallpaperColor || "#8b9a7a"}
+                onChange={(e) =>
+                  s.edit({
+                    ...s.scene,
+                    room: { ...s.scene.room, wallpaperColor: e.target.value },
+                  })
+                }
+              />
+            </label>
+            <small>
+              Built-in wallpaper pattern. Wall colour supplies the base; no AI
+              generation credits are used.
+            </small>
+          </>
+        )}
+        <label>
           Lighting
           <select
             value={s.scene.lighting}
@@ -578,6 +639,12 @@ function StudioContent({ id }: { id: string }) {
                 {(["translate", "rotate", "scale"] as const).map((mode) => (
                   <button
                     className={`tool ${s.mode === mode ? "active" : ""}`}
+                    aria-pressed={s.mode === mode}
+                    title={
+                      s.selected
+                        ? "Drag the selected object's coloured handles"
+                        : "Select an object, then drag its coloured handles"
+                    }
                     key={mode}
                     onClick={() => useEditor.setState({ mode })}
                   >
@@ -611,6 +678,8 @@ function StudioContent({ id }: { id: string }) {
                 </button>
                 <button
                   className={`tool ${s.snap ? "active" : ""}`}
+                  aria-pressed={s.snap}
+                  title="Snap dragging to 0.25 m, 15 degrees and 0.1 scale steps"
                   onClick={() => useEditor.setState({ snap: !s.snap })}
                 >
                   <Magnet size={12} /> Snap
@@ -628,6 +697,13 @@ function StudioContent({ id }: { id: string }) {
               <Focus size={12} /> Reset view
             </button>
           </div>
+          {!s.preview && (
+            <div className="studio-selection-hint" role="status">
+              {s.selected
+                ? `${s.mode === "translate" ? "Move" : s.mode === "rotate" ? "Rotate" : "Resize"}: drag a coloured handle${s.snap ? " · snapping on" : ""}`
+                : "Select an object to move, rotate or resize it"}
+            </div>
+          )}
           <LazyViewport
             scene={s.scene}
             assets={s.assets}

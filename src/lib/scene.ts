@@ -21,6 +21,9 @@ export const roomSchema = z
     height: finite.min(2).max(8),
     floor: color,
     wall: color,
+    wallpaper: z.enum(["none", "linen", "stripes", "arches"]).optional(),
+    wallpaperWall: z.enum(["back", "left", "both"]).optional(),
+    wallpaperColor: color.optional(),
   })
   .strict();
 export const objectSchema = z

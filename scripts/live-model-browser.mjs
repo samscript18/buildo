@@ -5,6 +5,7 @@ import { MongoClient, ObjectId } from "mongodb";
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
+import { checkStudioControls } from "./check-studio-controls.mjs";
 
 const [email, assetId] = process.argv.slice(2);
 if (!email || !ObjectId.isValid(assetId || ""))
@@ -64,7 +65,7 @@ const app = spawn(
 let browser;
 let page;
 let stage = "server startup";
-const directory = "artifacts/live-model-browser";
+const directory = `artifacts/live-model-browser/${assetId}`;
 await mkdir(directory, { recursive: true });
 try {
   for (let i = 0; i < 60; i++) {
@@ -90,7 +91,9 @@ try {
     viewport: { width: 1440, height: 1000 },
   });
   const errors = [];
-  page.on("pageerror", (e) => errors.push(e.name));
+  page.on("pageerror", (e) =>
+    errors.push({ name: e.name, message: e.message.split("\n")[0] }),
+  );
   stage = "isolated account";
   const password = `Isolated-Test-${randomBytes(20).toString("hex")}!`;
   const signup = await page.request.post(`${origin}/api/auth/sign-up/email`, {
@@ -111,7 +114,7 @@ try {
       ...asset,
       _id: copyId,
       ownerId: me.id,
-      name: "TEST ONLY · genuine Lux3D bedside table",
+      name: "TEST ONLY · genuine Lux3D model",
       allowReuse: false,
       rightsConfirmed: false,
       generationId: undefined,
@@ -135,7 +138,7 @@ try {
   });
   await page
     .getByRole("button", {
-      name: "+ TEST ONLY · genuine Lux3D bedside table",
+      name: "+ TEST ONLY · genuine Lux3D model",
       exact: true,
     })
     .click();
@@ -148,6 +151,31 @@ try {
     timeout: 30000,
   });
   await page.waitForLoadState("networkidle");
+  await expect(page.locator("canvas")).toHaveAttribute(
+    "data-loaded-models",
+    new RegExp(String(copyId)),
+    { timeout: 60000 },
+  );
+  let controls;
+  if (process.argv.includes("--controls")) {
+    stage = "actual toolbar pointer drags";
+    controls = await checkStudioControls(page, directory);
+    await writeFile(
+      `${directory}/controls-verification.json`,
+      JSON.stringify(
+        { controls, checkedAt: new Date().toISOString() },
+        null,
+        2,
+      ),
+    );
+  }
+  stage = "wallpaper";
+  await page
+    .getByRole("combobox", { name: /^Wallpaper pattern/ })
+    .selectOption("arches");
+  await page
+    .getByRole("combobox", { name: /^Wallpaper placement/ })
+    .selectOption("back");
   stage = "transform and save";
   const numeric = page.locator(".numeric-grid");
   for (const [group, axis, value] of [
@@ -183,6 +211,14 @@ try {
   const reopened = await (
     await page.request.get(`${origin}/api/projects/${projectId}`)
   ).json();
+  await writeFile(
+    `${directory}/scene-comparison.json`,
+    JSON.stringify(
+      { saved: saved.project.scene, reopened: reopened.project.scene },
+      null,
+      2,
+    ),
+  );
   expect(reopened.project.scene).toEqual(saved.project.scene);
   await expect(
     page.getByText("A model is unavailable.", { exact: false }),
@@ -191,6 +227,10 @@ try {
     path: `${directory}/genuine-table-restored.png`,
     fullPage: true,
   });
+  await writeFile(
+    `${directory}/browser-errors.json`,
+    JSON.stringify(errors, null, 2),
+  );
   expect(errors).toEqual([]);
   const report = {
     sourceAssetId: assetId,
@@ -209,6 +249,7 @@ try {
     privateTestDatabaseOnly: true,
     productionBedroomUnchanged: true,
     pageErrors: errors,
+    controls,
     checkedAt: new Date().toISOString(),
   };
   await writeFile(
