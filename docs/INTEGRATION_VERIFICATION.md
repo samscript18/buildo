@@ -1,5 +1,11 @@
 # Integration verification
 
+## Additional real bedroom assets and actual toolbar verification
+
+The user authorized two more Lux3D generations: bed/frame/mattress/bedding task `7242134` (ready asset `6af78a6c5fc6d2fc20c801d5`, 7,900,320 bytes) and TV console/television task `7248285` (ready asset `6af78eae5fc6d2fc20c801d6`, 6,274,632 bytes). Both original GLBs are in Cloudinary with verified delivered hashes. Exactly those two additional generations were submitted; delivery retries never created more paid tasks. Prompts, source bounds, hashes, transfer observations and actual inspected contents are recorded in STUDIO_BEDROOM_EVIDENCE.md.
+
+Actual gizmo pointer drags now verify Move/Rotate/Resize, database saves, undo/redo, snapped movement and camera reset. The investigation fixed a real wrapper-versus-inner-transform persistence error and a model-loading attachment lifecycle error. Wallpaper, all three genuine models and the user's complete saved scene at revision 39 were rendered in light/dark, visually inspected and restored exactly after hard reload in a read-only test copy. Retained screenshots and JSON evidence are under docs/evidence/. This is genuine provider/storage/asset evidence with an explicitly isolated scene/account; the original user room is never overwritten by browser tests. It does not establish realistic furnished-room performance on ordinary hardware, real production challenge participation or deployment verification.
+
 ## Status
 
 **Core asset pipeline verified in a controlled isolated room.** The one real generation completed, its genuine GLB is stored in Cloudinary with a verified delivery hash, and the actual model rendered and retained exact transforms through MongoDB save/reload. The browser scene/account/database were disposable test records; the asset and provider/storage delivery were genuine. The user's original bedroom was left unchanged and still needs its manual placement/save check. This does not verify deployment, a real configured challenge or SpatialGen.

@@ -1,5 +1,9 @@
 # Verification record
 
+## Studio toolbar, bedroom and settings follow-up
+
+See STUDIO_BEDROOM_EVIDENCE.md for actual pointer-drag values, saved-transform comparisons, camera reset, wallpaper save/reload, the two authorized Lux3D job IDs and GrantPath reference. Final production build, strict TypeScript, lint, 43 unit/integration tests and the expanded full isolated browser journey passed. Browser checks include display-name persistence, password change/revert, weak-password API rejection, other-session revocation followed by HTTP 401 in that session, token-free settings summaries, mobile settings routes and shared navigation. A TransformControls persistence bug and attachment-before-model-ready issue were fixed; session-read 429 errors and mobile-header overflow found by the expanded regression were corrected and rechecked. Reviewed screenshots and a hash manifest are retained in docs/evidence/.
+
 Date: 2026-11-13. Initial repository contained only AGENTS.md; no application was overwritten. Root brief preserved. No credentials were printed or written into source. Automated tests use disposable databases; the separate authorized live check uses the user's real project and provider task as recorded below.
 
 ## Dark appearance and live-response correction

@@ -1,5 +1,9 @@
 # Buildo
 
+Studio controls, wallpaper, the two authorized bedroom generations and the GrantPath settings reference are tracked in [docs/STUDIO_BEDROOM_EVIDENCE.md](docs/STUDIO_BEDROOM_EVIDENCE.md). Settings now has overview, profile, appearance, password/sessions and privacy pages. Studio wallpaper choices are under the room properties. Select an object before dragging Move/Rotate/Resize handles; Snap affects gizmo dragging, and Undo/Redo track scene changes.
+
+For evidence checks after a build: `npm run test:live-model -- <email> <ready-asset-id> --controls` exercises actual gizmo pointer drags and verifies the saved transforms in disposable MongoDB. `node --env-file=.env.local scripts/bedroom-scene-browser.mjs <email> <owned-project-id>` renders a read-only snapshot of an actual saved room in an isolated private test account, checks parsed Cloudinary models and exact reload restoration, and captures light/dark screenshots. Neither test edits the original project or generates/publishes content. Reviewed evidence retained with the repository is in `docs/evidence/`, with SHA-256s in its manifest.
+
 Appearance: use the moon/sun control in the header or workspace sidebar. Settings → Appearance offers Light, Dark and System, saved in the current browser. Theme changes do not modify saved room materials or lighting.
 
 Live diagnostics (use your account email and existing IDs): `npm run test:preflight -- <email>`, `npm run generation:reconcile -- <email> <job-id>` to resume an existing job, or add `--inspect-output` to download/validate without uploading. These commands never create a generation. `npm run test:live-model -- <email> <asset-id>` renders an existing genuine Cloudinary asset in a disposable MongoDB test room and checks exact transform restoration; it leaves the real project unchanged and never publishes. Build first with `npm run build` and keep port 3102 available. Evidence goes to ignored `artifacts/live-model-browser/`.

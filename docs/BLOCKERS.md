@@ -1,5 +1,7 @@
 # Blockers
 
+Studio/bedroom follow-up: both newly authorized Lux3D jobs completed and are ready in Cloudinary—bed task 7242134 and TV task 7248285. The complete original saved bedroom (revision 39) with all three genuine models and wallpaper passed read-only browser-copy rendering/restoration. Actual toolbar drags, saves, undo/redo, snapping and reset camera passed; settings profile/password/session actions passed. Evidence and retained screenshots: STUDIO_BEDROOM_EVIDENCE.md and docs/evidence/. No generation/credential blocker remains for those requested objects. Production deployment, real challenge participation, SpatialGen, ordinary-hardware performance and email recovery remain separate outstanding work.
+
 Initial inspection: no .env.local and no user-supplied Lux3D asset.
 
 Update 2026-11-13: local credentials are configured and passed preflight. The user submitted the one authorized generation in regular Chrome; task `7232531` completed and its genuine GLB is now stored in Cloudinary as ready asset `6af782945fc6d2fc20c801d4`. Delivered bytes match the source SHA-256. The actual GLB host `qhsmodel.kujiale.com` is configured locally in `LUX3D_DOWNLOAD_HOSTS`. No credential variable is currently missing for this path. Genuine Cloudinary browser delivery, textures, orientation, numeric transforms and exact MongoDB save/reload passed in a disposable test room. The user's original bedroom still needs the object placed and saved manually; it was not modified by that harness.

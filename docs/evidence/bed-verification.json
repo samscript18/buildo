@@ -1,0 +1,111 @@
+{
+  "sourceAssetId": "6af78a6c5fc6d2fc20c801d5",
+  "providerTaskId": "7242134",
+  "source": "Lux3D API",
+  "cloudinaryDelivery": {
+    "status": 200,
+    "contentType": "model/gltf-binary",
+    "cors": "*",
+    "bytes": 7900320,
+    "sha256": "f6343af2a7a1ce7d65569334ab23de0afaf8f7fc2fdfff7c486738fc86084fc2"
+  },
+  "scene": {
+    "schemaVersion": 1,
+    "environment": "procedural",
+    "room": {
+      "width": 5,
+      "depth": 4,
+      "height": 2.8,
+      "floor": "#d9c3a6",
+      "wall": "#f0ebe1",
+      "wallpaper": "arches",
+      "wallpaperWall": "back"
+    },
+    "lighting": "daylight",
+    "camera": {
+      "position": [7, 6, 7],
+      "target": [0, 0, 0]
+    },
+    "objects": [
+      {
+        "instanceId": "d93023dd-62a7-47a0-a8ff-377c508b1221",
+        "assetId": "6af78d47582047a4ef9265d7",
+        "position": [1.1, 0, 0],
+        "rotation": [0, 0.5235987755982988, 0],
+        "scale": [0.8, 0.8, 0.8]
+      }
+    ]
+  },
+  "revision": 10,
+  "restoredExactly": true,
+  "privateTestDatabaseOnly": true,
+  "productionBedroomUnchanged": true,
+  "pageErrors": [],
+  "controls": [
+    {
+      "action": "Move",
+      "before": [
+        [0, 0, 0],
+        [0, 0, 0],
+        [1, 1, 1]
+      ],
+      "after": [
+        [0.572, 0, 0],
+        [0, 0, 0],
+        [1, 1, 1]
+      ],
+      "actualPointerDrag": true,
+      "databaseSaveVerified": true
+    },
+    {
+      "action": "Rotate",
+      "before": [
+        [0, 0, 0],
+        [0, 0, 0],
+        [1, 1, 1]
+      ],
+      "after": [
+        [0, 0.393, 0],
+        [-65.156, 0, 0],
+        [1, 1, 1]
+      ],
+      "actualPointerDrag": true,
+      "databaseSaveVerified": true
+    },
+    {
+      "action": "Resize",
+      "before": [
+        [0, 0, 0],
+        [0, 0, 0],
+        [1, 1, 1]
+      ],
+      "after": [
+        [0, 0, 0],
+        [0, 0, 0],
+        [1.527, 1, 1]
+      ],
+      "actualPointerDrag": true,
+      "databaseSaveVerified": true
+    },
+    {
+      "action": "Move with snap",
+      "before": [
+        [0, 0, 0],
+        [0, 0, 0],
+        [1, 1, 1]
+      ],
+      "after": [
+        [0.5, 0, 0],
+        [0, 0, 0],
+        [1, 1, 1]
+      ],
+      "actualPointerDrag": true,
+      "databaseSaveVerified": true
+    },
+    {
+      "action": "orbit then Reset view",
+      "averagePixelDifference": 0
+    }
+  ],
+  "checkedAt": "2026-11-13T22:21:49.683Z"
+}

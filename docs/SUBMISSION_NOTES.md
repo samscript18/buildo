@@ -10,6 +10,8 @@ Live Lux3D/Cloudinary evidence now exists for one genuine bedside table: task 72
 
 ## Aholo usage
 
+Additional completed content: real bed/frame/mattress/bedding task 7242134 and TV-console/television task 7248285. The actual three-object bedroom at source revision 39, with original procedural linen wallpaper, was rendered in light/dark and exactly restored after reload in a read-only disposable copy. Physical toolbar checks also exposed and fixed a gizmo persistence bug. Retained images, hashes, prompts, exact scene JSON and limitations: STUDIO_BEDROOM_EVIDENCE.md and docs/evidence/. Settings test accounts and copied browser scenes are labeled TEST ONLY; model content and provider/storage delivery are genuine. No real production challenge or deployment success is claimed.
+
 Lux3D provides the generated bedside table through the app's documented international API workflow. One authorized real request was submitted by the user, and its original 6,789,860-byte self-contained GLB was stored in Cloudinary and used in the editor. Prompt, task ID, bounds, normalization, hash, observed response correction and browser evidence are recorded in INTEGRATION_VERIFICATION.md. No paid resubmission occurred. Procedural room shells are original application geometry, never SpatialGen outputs. SpatialGen/Viewer interoperability is not claimed.
 
 ## Original work and dependencies

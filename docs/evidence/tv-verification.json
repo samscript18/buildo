@@ -1,0 +1,45 @@
+{
+  "sourceAssetId": "6af78eae5fc6d2fc20c801d6",
+  "providerTaskId": "7248285",
+  "source": "Lux3D API",
+  "cloudinaryDelivery": {
+    "status": 200,
+    "contentType": "model/gltf-binary",
+    "cors": "*",
+    "bytes": 6274632,
+    "sha256": "9fbc7960ff2d6202554e7a478722228b79dc7b33aacc4d2509395488f72a6e50"
+  },
+  "scene": {
+    "schemaVersion": 1,
+    "environment": "procedural",
+    "room": {
+      "width": 5,
+      "depth": 4,
+      "height": 2.8,
+      "floor": "#d9c3a6",
+      "wall": "#f0ebe1",
+      "wallpaper": "arches",
+      "wallpaperWall": "back"
+    },
+    "lighting": "daylight",
+    "camera": {
+      "position": [7, 6, 7],
+      "target": [0, 0, 0]
+    },
+    "objects": [
+      {
+        "instanceId": "00d91abb-cbc9-4834-b003-bc1072af2467",
+        "assetId": "6af7911c44171aca64889133",
+        "position": [1.1, 0, 0],
+        "rotation": [0, 0.5235987755982988, 0],
+        "scale": [0.8, 0.8, 0.8]
+      }
+    ]
+  },
+  "revision": 2,
+  "restoredExactly": true,
+  "privateTestDatabaseOnly": true,
+  "productionBedroomUnchanged": true,
+  "pageErrors": [],
+  "checkedAt": "2026-11-13T22:37:33.713Z"
+}

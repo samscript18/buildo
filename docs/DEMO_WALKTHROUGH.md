@@ -12,6 +12,8 @@ Once the asset is ready, add it, inspect textures and orientation, move it, rota
 
 ## Appearance
 
+The bedroom now has genuine generated bed and TV-console assets as well as the original Lux3D table. Reload the latest saved project before continuing if another browser tab or the operator updated its revision. Select a model, choose Move/Rotate/Resize and drag the coloured handle. Undo/Redo reverse/reapply edits; Snap uses 0.25m, 15° and 0.1 scaling increments. Reset view restores the camera. Room properties include Wallpaper pattern, Wallpaper placement and Wallpaper accent. Save or let autosave finish, then reload to verify. The actual checks and retained screenshots are in STUDIO_BEDROOM_EVIDENCE.md and docs/evidence/.
+
 The moon/sun button in the public header or next to the workspace logo switches light/dark appearance. In the studio's compact sidebar it sits below the orange Buildo logo. Settings → Appearance offers Light, Dark and System. The choice persists in the current browser and System follows device changes. Interface appearance and the viewport backdrop change without modifying the room's saved materials or lighting.
 
 ## Complete product journey

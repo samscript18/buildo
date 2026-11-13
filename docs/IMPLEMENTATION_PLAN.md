@@ -14,4 +14,6 @@ No seeded community data, no fabricated provider output, no paid automatic retry
 
 ## Execution status
 
+Latest requested follow-up completed: real gizmo attachment/save fix with physical pointer tests; optional saved wallpaper patterns; two additional authorized genuine Lux3D assets (bed and TV console) stored and rendered in the actual saved bedroom; GrantPath-inspired settings with working profile/password/session actions. See STUDIO_BEDROOM_EVIDENCE.md for exact results, failures corrected and retained screenshots. This does not remove the broader submission/deployment blockers below.
+
 Independent implementation phases 0–4 and the available phase-6 local verification are implemented. Phase 1 now has genuine live Lux3D generation → Cloudinary upload/hash → actual browser rendering → transforms → MongoDB save/reload evidence in a controlled disposable room; the real user's original bedroom still needs manual placement/save confirmation. Phase 5 remains blocked by absent real SpatialGen/Viewer output. The user’s UI refinements include shared Light/Dark/System appearance across public and workspace surfaces. Actual production challenge participation, deployment and footage remain unverified. Exact remaining checks and dependencies are tracked in REQUIREMENTS_MATRIX.md, BLOCKERS.md and VERIFICATION.md; the project is not declared complete.

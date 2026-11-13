@@ -1,5 +1,7 @@
 # Decisions
 
+2026-11-13 studio/settings: attach TransformControls explicitly to the object group saved by the editor instead of its default wrapper. Numeric checks alone were insufficient evidence; add actual pointer drags and persisted-transform assertions. Built-in wall patterns are procedural application textures, not provider-generated content. The user separately authorized two real Lux3D requests for a complete bed and TV console/television; stable idempotency keys and one active generation preserve that limit. GrantPath's settings dock/profile-directory/two-column-panel design is the requested visual reference; Buildo implements only applicable functioning controls and labels missing account/email capabilities honestly. Reference and exact evidence: STUDIO_BEDROOM_EVIDENCE.md.
+
 2026-11-13 appearance: offer Light/Dark/System with a device-default initial choice and browser-local persistence. Apply the resolved theme before paint. Theme affects interface and viewport backdrop only; it never changes room materials, lighting, scene JSON, revision or publication data. A permanent sidebar/header switch complements the Settings appearance controls. No new package is required.
 
 2026-11-13 live Lux3D observation: the running task response contains null output slots. Filter those slots before GLB selection instead of treating a successful running-status response as a provider failure. Clear the previous safe error when status polling succeeds. Never resubmit the paid task for this parsing issue.

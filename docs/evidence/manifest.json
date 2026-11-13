@@ -1,0 +1,89 @@
+{
+  "description": "Actual application evidence: genuine Lux3D/Cloudinary models in isolated TEST ONLY scenes. Complete bedroom is a read-only copy of original revision 39. No mockups, signed URLs or credentials.",
+  "files": [
+    {
+      "file": "README.md",
+      "source": "Repository evidence index",
+      "bytes": 1756,
+      "sha256": "6620ea1b18982e2f752081f091b3f174afcdf8463170c0aa3db892cc337aa024"
+    },
+    {
+      "file": "bed-controls-move.png",
+      "source": "artifacts/live-model-browser/6af78a6c5fc6d2fc20c801d5/controls-move.png",
+      "bytes": 200445,
+      "sha256": "77806488c1c40ca9344768ba2a9bf0f8bae9ee77a8015f463f262b65219114db"
+    },
+    {
+      "file": "bed-controls-resize.png",
+      "source": "artifacts/live-model-browser/6af78a6c5fc6d2fc20c801d5/controls-resize.png",
+      "bytes": 202494,
+      "sha256": "19b54db15cf31fda5113fe2726501f2a5862ec20a520e8fe9def1636f082ec84"
+    },
+    {
+      "file": "bed-controls-rotate.png",
+      "source": "artifacts/live-model-browser/6af78a6c5fc6d2fc20c801d5/controls-rotate.png",
+      "bytes": 213323,
+      "sha256": "7a995259ef8d628a34f409ad549b60e0274679bce1bf646b636aee54b74c14b4"
+    },
+    {
+      "file": "bed-controls-snap.png",
+      "source": "artifacts/live-model-browser/6af78a6c5fc6d2fc20c801d5/controls-move-snap.png",
+      "bytes": 201679,
+      "sha256": "7ee409e5ea3042f3f8a767e8ee90ee2e40303865d36f25851a18c1ee712c116d"
+    },
+    {
+      "file": "bed-verification.json",
+      "source": "artifacts/live-model-browser/6af78a6c5fc6d2fc20c801d5/verification.json",
+      "bytes": 2350,
+      "sha256": "7b46a81eb993652244fb29f17ca3b37621e356cd56352493d9f1d6638383fae2"
+    },
+    {
+      "file": "bed-wallpaper-restored.png",
+      "source": "artifacts/live-model-browser/6af78a6c5fc6d2fc20c801d5/genuine-table-restored.png",
+      "bytes": 201776,
+      "sha256": "18e00b060546c97bba5f7f4e3939654a58d37b9784a93a70b531f4afb16b7b07"
+    },
+    {
+      "file": "bedroom-dark.png",
+      "source": "artifacts/bedroom-scene/6af77e405fc6d2fc20c801d2/bedroom-dark.png",
+      "bytes": 347240,
+      "sha256": "083d26c06f6030fdac7e309275e0e3e69e4ab0bbbc163e4ee612323fa292a827"
+    },
+    {
+      "file": "bedroom-light.png",
+      "source": "artifacts/bedroom-scene/6af77e405fc6d2fc20c801d2/bedroom-light.png",
+      "bytes": 347538,
+      "sha256": "f3c6eb01cf93c3db1114ce0be382e3ac297896ae79cde20e15eac650f9da2847"
+    },
+    {
+      "file": "bedroom-verification.json",
+      "source": "artifacts/bedroom-scene/6af77e405fc6d2fc20c801d2/verification.json",
+      "bytes": 3082,
+      "sha256": "990c915c9b4e921d78b01eb385eadcf99c90d0d702c56e0b9724efc08a4f9f48"
+    },
+    {
+      "file": "settings-overview.png",
+      "source": "artifacts/browser/settings-directory.png",
+      "bytes": 129302,
+      "sha256": "bdab028afb2554eb106e2895c536071f9581620129184e054d5059887a4cf977"
+    },
+    {
+      "file": "settings-privacy-mobile.png",
+      "source": "artifacts/browser/settings-privacy-mobile.png",
+      "bytes": 74099,
+      "sha256": "2169a00af473c14a69d000109fce69164e68cb033f695ff42bb5e0697748b5ff"
+    },
+    {
+      "file": "tv-console-restored.png",
+      "source": "artifacts/live-model-browser/6af78eae5fc6d2fc20c801d6/genuine-table-restored.png",
+      "bytes": 200132,
+      "sha256": "5299ee0e3074881785384ea4af79b0499735227fffad22525f00c06a8589cee9"
+    },
+    {
+      "file": "tv-verification.json",
+      "source": "artifacts/live-model-browser/6af78eae5fc6d2fc20c801d6/verification.json",
+      "bytes": 1127,
+      "sha256": "368e0ff8205241dc868c02d4126016fbd1bd01b78e7137480157fa6a5f05dc28"
+    }
+  ]
+}

@@ -2,6 +2,10 @@
 
 All domain endpoints use JSON except multipart asset import. Authenticated identity comes exclusively from Better Auth session cookies. Writes require matching Origin. Errors: `{error:{code,message,requestId,fields?}}`. Success is JSON; dates ISO, IDs strings. Lists use bounded page/limit. Scene schema in src/lib/scene.ts. 1MB JSON body maximum. All private identifiers are ownership checked.
 
+Settings: authenticated `GET /api/settings` returns own id/name/role/email/createdAt, at most ten provider names and twenty unexpired session start/expiry dates. It never returns session tokens, password hashes, provider tokens, IP addresses or user agents. Profile updates use Better Auth `POST /api/auth/update-user` with name validation (1–80 characters). Existing credential accounts use `POST /api/auth/change-password` with currentPassword/newPassword/revokeOtherSessions; the server enforces the same composition policy as registration. `POST /api/auth/revoke-other-sessions` uses the current session and cannot revoke another account's sessions. Email changes and password setup for Google-only accounts remain unavailable without configured email recovery.
+
+Room scene additions are optional and backward compatible: `wallpaper: none|linen|stripes|arches`, `wallpaperWall: back|left|both`, `wallpaperColor: #rrggbb`. They are part of the validated project scene, revision checks and immutable publication snapshots. Unknown patterns and non-hex colours are rejected.
+
 | Method/path                              | Body/behavior                                                                                |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------- |
 | GET/POST /api/auth/[...all]              | Better Auth email signup/signin/session/signout                                              |
