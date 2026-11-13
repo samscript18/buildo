@@ -2,10 +2,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LazyViewport } from "@/features/editor/lazy-viewport";
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api, post } from "@/lib/api";
-import { ThemeSettings } from "./theme";
 import {
   categories,
   defaultScene,
@@ -320,37 +318,6 @@ export function AssetLibrary() {
             <h2>Import an object</h2>
             <ImportForm />
           </div>
-        </div>
-      </Private>
-    </div>
-  );
-}
-export function Settings() {
-  const me = useQuery({
-    queryKey: ["me"],
-    queryFn: () => api<{ name: string; role: string }>("me"),
-  });
-  return (
-    <div className="container">
-      <Private>
-        <PageHeading eyebrow="Your account" title="A place of your own." />
-        <ThemeSettings />
-        <div className="form-card">
-          <h2>{me.data?.name}</h2>
-          <p>
-            Your projects and assets are private until you publish a design.
-            Published designs are fixed snapshots; changes in your studio stay
-            private.
-          </p>
-          <p>
-            Email delivery and password recovery are not configured for this
-            hackathon build. Keep your password secure.
-          </p>
-          {me.data?.role === "admin" && (
-            <Link className="button secondary" href="/admin/challenges">
-              Manage challenges
-            </Link>
-          )}
         </div>
       </Private>
     </div>

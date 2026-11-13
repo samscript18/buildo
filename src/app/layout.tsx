@@ -12,6 +12,7 @@ import { SiteFrame } from "@/components/site-frame";
 import "./dashboard/dashboard.css";
 import "./workspace-shell.css";
 import "./theme.css";
+import "./settings.css";
 import { themeScript } from "@/lib/theme-script";
 export const metadata: Metadata = {
   metadataBase: siteUrl(),

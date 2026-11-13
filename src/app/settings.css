@@ -1,0 +1,255 @@
+.settings-page {
+  max-width: 1320px;
+}
+.settings-private {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+.settings-dock {
+  display: flex;
+  overflow-x: auto;
+  gap: 4px;
+  padding: 6px;
+  margin-bottom: 28px;
+  border: 1px solid var(--line);
+  background: var(--theme-surface);
+  border-radius: 12px;
+}
+.settings-dock a {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 16px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.settings-dock a:hover {
+  background: var(--theme-raised);
+  color: var(--ink);
+}
+.settings-dock a[aria-current="page"] {
+  background: #405936;
+  color: #fffdf5;
+}
+.settings-profile-feature {
+  display: flex;
+  align-items: center;
+  gap: 23px;
+  padding: 32px;
+  background: var(--theme-raised);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+.settings-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  background: var(--theme-surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 18px;
+  font-size: 27px;
+}
+.settings-profile-feature > div {
+  flex: 1;
+}
+.settings-profile-feature h2 {
+  margin-bottom: 8px;
+  font-size: 29px;
+}
+.settings-profile-feature p {
+  margin: 0;
+  max-width: 550px;
+  font-size: 13px;
+}
+.settings-profile-feature .eyebrow {
+  margin-bottom: 12px;
+}
+.settings-directory {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.settings-directory > a {
+  padding: 25px;
+  border: 1px solid var(--line);
+  background: var(--theme-surface);
+  border-radius: 13px;
+  transition: border-color 0.15s;
+}
+.settings-directory > a:hover {
+  border-color: var(--accent);
+}
+.settings-card-top {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  margin-bottom: 27px;
+}
+.settings-directory h2 {
+  font-size: 21px;
+  margin-bottom: 10px;
+}
+.settings-directory p {
+  margin: 0;
+  font-size: 12px;
+}
+.settings-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.2fr);
+  gap: 45px;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--theme-surface);
+  margin-bottom: 22px;
+  align-items: start;
+}
+.settings-section-icon {
+  display: inline-flex;
+  color: var(--muted);
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--theme-raised);
+  margin-bottom: 24px;
+}
+.settings-panel h2 {
+  font-size: 28px;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+.settings-panel p {
+  font-size: 13px;
+}
+.settings-panel .form {
+  max-width: none;
+  gap: 20px;
+}
+.settings-panel .form label {
+  color: var(--muted);
+  gap: 8px;
+}
+.settings-panel input {
+  padding-inline: 14px;
+}
+.settings-panel .password-field input {
+  padding-right: 50px;
+}
+.settings-info {
+  padding: 25px;
+  background: var(--theme-raised);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.settings-info > svg {
+  color: var(--muted);
+  margin-bottom: 19px;
+}
+.settings-info h3 {
+  font-size: 18px;
+}
+.settings-info .button {
+  font-size: 12px;
+  white-space: normal;
+}
+.settings-session-list {
+  margin-bottom: 20px;
+}
+.settings-session-list > div {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 17px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12px;
+}
+.settings-session-list small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+.settings-privacy-copy h3 {
+  font-size: 17px;
+  margin-top: 24px;
+}
+.settings-privacy-copy h3:first-child {
+  margin-top: 0;
+}
+.settings-footnote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  margin-top: 24px;
+}
+.studio-selection-hint {
+  position: absolute;
+  z-index: 2;
+  top: 66px;
+  left: 15px;
+  pointer-events: none;
+  color: var(--muted);
+  background: var(--theme-surface);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-size: 10px;
+  max-width: calc(100% - 30px);
+}
+@media (max-width: 1000px) {
+  .settings-directory {
+    grid-template-columns: 1fr;
+  }
+  .settings-panel {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+@media (max-width: 700px) {
+  .header .header-workspace-link {
+    display: none;
+  }
+  .header-actions .header-signout {
+    display: none;
+  }
+  .settings-dock a {
+    padding: 11px 12px;
+    font-size: 11px;
+  }
+  .settings-profile-feature {
+    padding: 24px;
+    gap: 15px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .settings-profile-feature > div {
+    min-width: 160px;
+  }
+  .settings-profile-feature h2 {
+    font-size: 25px;
+  }
+  .settings-panel {
+    padding: 24px;
+  }
+  .settings-private {
+    display: none;
+  }
+  .studio-selection-hint {
+    top: 65px;
+    left: 10px;
+    max-width: calc(100% - 20px);
+    font-size: 9px;
+  }
+}

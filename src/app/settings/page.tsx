@@ -1,4 +1,4 @@
-import { Settings } from "@/components/workspace";
+import { SettingsPage } from "@/components/settings";
 export default function Page() {
-  return <Settings />;
+  return <SettingsPage />;
 }

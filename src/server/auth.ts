@@ -28,12 +28,25 @@ function createAuth() {
         : {},
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
-        if (ctx.path === "/sign-up/email") {
-          const password = ctx.body?.password;
+        if (["/sign-up/email", "/change-password"].includes(ctx.path)) {
+          const password =
+            ctx.path === "/change-password"
+              ? ctx.body?.newPassword
+              : ctx.body?.password;
           if (typeof password !== "string" || !validNewPassword(password))
             throw new APIError("BAD_REQUEST", {
               message:
                 "Use 10–128 characters with a lowercase letter, an uppercase letter, a number and a symbol.",
+            });
+        }
+        if (
+          ["/sign-up/email", "/update-user"].includes(ctx.path) &&
+          ctx.body?.name !== undefined
+        ) {
+          const name = ctx.body.name;
+          if (typeof name !== "string" || !name.trim() || name.length > 80)
+            throw new APIError("BAD_REQUEST", {
+              message: "Use a display name between 1 and 80 characters.",
             });
         }
       }),
@@ -44,7 +57,14 @@ function createAuth() {
       maxPasswordLength: 128,
       requireEmailVerification: false,
     },
-    rateLimit: { enabled: true, storage: "database", window: 60, max: 30 },
+    rateLimit: {
+      enabled: true,
+      storage: "database",
+      window: 60,
+      max: 30,
+      // Session reads accompany navigation/focus; keep write/login limits unchanged.
+      customRules: { "/get-session": { window: 60, max: 120 } },
+    },
     user: {
       additionalFields: {
         role: { type: "string", defaultValue: "user", input: false },

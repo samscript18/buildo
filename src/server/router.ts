@@ -54,6 +54,41 @@ export async function route(request: Request, path: string[]) {
     if (group === "dashboard" && !key) {
       allowed(["GET"]);
       result = await dashboard(await identity(request));
+    } else if (group === "settings" && !key) {
+      allowed(["GET"]);
+      const user = await identity(request);
+      const native = (await db()).connection.db!;
+      const profile = await native
+        .collection("user")
+        .findOne(
+          { _id: new ObjectId(user.id) },
+          { projection: { name: 1, email: 1, createdAt: 1 } },
+        );
+      const userFilter = { $in: [user.id, new ObjectId(user.id)] };
+      const accounts = await native
+        .collection("account")
+        .find({ userId: userFilter }, { projection: { providerId: 1 } })
+        .limit(10)
+        .toArray();
+      const sessions = await native
+        .collection("session")
+        .find(
+          { userId: userFilter, expiresAt: { $gt: new Date() } },
+          { projection: { createdAt: 1, expiresAt: 1 } },
+        )
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .toArray();
+      result = {
+        ...user,
+        email: profile?.email,
+        createdAt: profile?.createdAt,
+        providers: accounts.map((a) => a.providerId),
+        sessions: sessions.map((s) => ({
+          createdAt: s.createdAt,
+          expiresAt: s.expiresAt,
+        })),
+      };
     } else if (group === "projects") {
       const user = await identity(request);
       if (!key) {

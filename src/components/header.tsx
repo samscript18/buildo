@@ -33,6 +33,7 @@ export function Header() {
         </Link>
         {data && (
           <Link
+            className="header-workspace-link"
             href="/dashboard"
             aria-current={path === "/dashboard" ? "page" : undefined}
           >
@@ -53,7 +54,7 @@ export function Header() {
         )}
         {data ? (
           <button
-            className="text-button"
+            className="text-button header-signout"
             onClick={async () => {
               const result = await authClient.signOut();
               if (result.error) return;

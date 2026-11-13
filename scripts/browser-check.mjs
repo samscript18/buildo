@@ -143,6 +143,15 @@ try {
   });
   const page = await context.newPage();
   page.on("pageerror", (e) => errors.push(e.stack || e.message));
+  page.on("response", (response) => {
+    if (
+      response.status() >= 400 &&
+      new URL(response.url()).pathname.startsWith("/api/auth/")
+    )
+      console.log(
+        `AUTH HTTP ${response.status()} ${new URL(response.url()).pathname}`,
+      );
+  });
   await mkdir("artifacts/browser", { recursive: true });
   await record(
     "landing renders real procedural room and public empty gallery",
@@ -527,6 +536,120 @@ try {
       await expect(page.locator('canvas[data-rendered="true"]')).toBeVisible({
         timeout: 30000,
       });
+    },
+  );
+  await record(
+    "settings profile, real password changes, session revocation and privacy routes work",
+    async () => {
+      await page.goto(`${origin}/settings/profile`);
+      await page
+        .getByLabel("Display name", { exact: true })
+        .fill("TEST ONLY Updated Alice");
+      await page
+        .getByRole("button", { name: "Save profile", exact: true })
+        .click();
+      await expect(page.getByRole("status")).toContainText("Profile saved.");
+      await page.reload();
+      await expect(
+        page.getByLabel("Display name", { exact: true }),
+      ).toHaveValue("TEST ONLY Updated Alice");
+      await page
+        .getByLabel("Display name", { exact: true })
+        .fill("TEST ONLY Alice");
+      await page
+        .getByRole("button", { name: "Save profile", exact: true })
+        .click();
+      await expect(page.getByRole("status")).toContainText("Profile saved.");
+      const otherContext = await browser.newContext();
+      const other = await otherContext.newPage();
+      await other.goto(`${origin}/login`);
+      await other
+        .getByLabel("Email", { exact: true })
+        .fill("alice@buildo.test");
+      await other
+        .getByLabel("Password", { exact: true })
+        .fill("Buildo-test-password-123");
+      await other.getByRole("button", { name: /^Sign in/ }).click();
+      await expect(other).toHaveURL(`${origin}/dashboard`);
+      await page.goto(`${origin}/settings/account`);
+      await page
+        .getByRole("button", { name: "Sign out other sessions", exact: true })
+        .click();
+      await expect(
+        page.getByRole("status", { name: "", exact: true }),
+      ).toContainText("Other sessions signed out.");
+      expect((await other.request.get(`${origin}/api/me`)).status()).toBe(401);
+      await otherContext.close();
+      const weak = await page.request.post(
+        `${origin}/api/auth/change-password`,
+        {
+          headers: { Origin: origin },
+          data: {
+            currentPassword: "Buildo-test-password-123",
+            newPassword: "weak-password",
+          },
+        },
+      );
+      expect(weak.status()).toBe(400);
+      for (const [current, next] of [
+        ["Buildo-test-password-123", "Buildo-test-new-Password-456!"],
+        ["Buildo-test-new-Password-456!", "Buildo-test-password-123"],
+      ]) {
+        await page
+          .getByLabel("Current password", { exact: true })
+          .fill(current);
+        await page.getByLabel("New password", { exact: true }).fill(next);
+        await page
+          .getByLabel("Confirm new password", { exact: true })
+          .fill(next);
+        await page
+          .getByRole("button", { name: "Show new password", exact: true })
+          .click();
+        await expect(
+          page.getByLabel("New password", { exact: true }),
+        ).toHaveAttribute("type", "text");
+        await page
+          .getByRole("button", { name: "Hide new password", exact: true })
+          .click();
+        await page
+          .getByRole("button", { name: "Change password", exact: true })
+          .click();
+        await expect(
+          page.getByRole("status", { name: "", exact: true }),
+        ).toContainText("Password changed.");
+      }
+      await page.goto(`${origin}/settings`);
+      await page.screenshot({
+        path: "artifacts/browser/settings-directory.png",
+        fullPage: true,
+      });
+      for (const route of ["profile", "appearance", "account", "privacy"]) {
+        await page.goto(`${origin}/settings/${route}`);
+        await expect(
+          page.getByRole("navigation", { name: "Settings navigation" }),
+        ).toBeVisible();
+        const details = await (
+          await page.request.get(`${origin}/api/settings`)
+        ).json();
+        expect(JSON.stringify(details)).not.toContain("token");
+        expect(details.providers).toContain("credential");
+        await page.setViewportSize({ width: 390, height: 844 });
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+        ).toBe(true);
+      }
+      await page.screenshot({
+        path: "artifacts/browser/settings-privacy-mobile.png",
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      await page.goto(`${origin}/studio/${projectId}`);
+      await expect(page.locator('canvas[data-rendered="true"]')).toBeVisible({
+        timeout: 30000,
+      });
+      await page.waitForLoadState("networkidle");
     },
   );
   await record(
