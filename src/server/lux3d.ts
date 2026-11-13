@@ -48,7 +48,12 @@ export async function queryLux(taskId: string) {
         z.literal(4),
         z.literal(6),
       ]),
-      outputs: z.array(z.object({ content: z.string() })).optional(),
+      outputs: z
+        .array(z.object({ content: z.string() }).nullable())
+        .nullish()
+        .transform((outputs) =>
+          (outputs ?? []).filter((output) => output !== null),
+        ),
     })
     .parse(await call(`task/get?taskid=${encodeURIComponent(taskId)}`));
 }

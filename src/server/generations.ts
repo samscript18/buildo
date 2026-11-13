@@ -155,6 +155,7 @@ export async function generationItem(jobId: string, user: { id: string }) {
   if (!lease) return view(job.toObject());
   try {
     const result = await queryLux(lease.providerTaskId!);
+    lease.safeError = undefined;
     if (result.status === 4 || result.status === 6) {
       lease.state = "failed";
       lease.safeError =

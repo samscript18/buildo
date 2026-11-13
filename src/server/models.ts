@@ -1,5 +1,6 @@
 import "server-only";
-import { Schema, model, models } from "mongoose";
+import mongoose from "mongoose";
+const { Schema, model, models } = mongoose;
 import type { Scene } from "@/lib/scene";
 const options = { timestamps: true };
 const projectSchema = new Schema(
