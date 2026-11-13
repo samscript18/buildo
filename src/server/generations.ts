@@ -207,7 +207,16 @@ export async function generationItem(jobId: string, user: { id: string }) {
         "Generation is taking longer than expected. Check the provider account; Buildo will not resubmit.";
       lease.activeSlot = undefined;
     }
-  } catch {
+  } catch (error) {
+    console.error("Generation reconciliation paused", {
+      jobId: String(lease._id),
+      stage: lease.state,
+      type: error instanceof Error ? error.name : "StorageError",
+      code:
+        typeof error === "object" && error && "code" in error
+          ? String(error.code).slice(0, 80)
+          : undefined,
+    });
     lease.state =
       lease.state === "transferring" ? "transfer_failed" : lease.state;
     lease.safeError =

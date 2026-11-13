@@ -30,7 +30,7 @@ export async function uploadModel(bytes: Uint8Array, ownerId: string) {
         resource_type: "raw",
         public_id: publicId,
         overwrite: false,
-        timeout: 20000,
+        timeout: 60000,
       },
       (e, r) => (e || !r ? reject(e) : resolve(r)),
     );
