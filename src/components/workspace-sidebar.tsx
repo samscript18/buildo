@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
+import { ThemeToggle } from "./theme";
 export function WorkspaceSidebar({ compact = false }: { compact?: boolean }) {
   const path = usePathname(),
     router = useRouter(),
@@ -130,6 +131,7 @@ export function WorkspaceSidebar({ compact = false }: { compact?: boolean }) {
             {error && <p role="alert">{error}</p>}
           </nav>
         </details>
+        <ThemeToggle />
       </div>
       <div className="workspace-label">
         <span>

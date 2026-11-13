@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api, post } from "@/lib/api";
+import { ThemeSettings } from "./theme";
 import {
   categories,
   defaultScene,
@@ -333,6 +334,7 @@ export function Settings() {
     <div className="container">
       <Private>
         <PageHeading eyebrow="Your account" title="A place of your own." />
+        <ThemeSettings />
         <div className="form-card">
           <h2>{me.data?.name}</h2>
           <p>

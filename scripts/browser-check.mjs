@@ -450,6 +450,86 @@ try {
     },
   );
   await record(
+    "theme persists across reload, follows the device and preserves saved scene",
+    async () => {
+      const before = await (
+        await page.request.get(`${origin}/api/projects/${projectId}`)
+      ).json();
+      const lightSwitch = page.getByRole("button", {
+        name: "Switch to light mode",
+        exact: true,
+      });
+      if (await lightSwitch.count()) await lightSwitch.click();
+      await page
+        .getByRole("button", { name: "Switch to dark mode", exact: true })
+        .click();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      await expect(
+        page.getByRole("button", { name: "Save", exact: true }),
+      ).toHaveCSS("background-color", "rgb(37, 48, 39)");
+      await page.screenshot({
+        path: "artifacts/browser/studio-dark.png",
+        fullPage: true,
+      });
+      await page.reload();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      await expect(
+        page.getByRole("button", { name: "Switch to light mode", exact: true }),
+      ).toBeVisible();
+      const after = await (
+        await page.request.get(`${origin}/api/projects/${projectId}`)
+      ).json();
+      expect(after.project.scene).toEqual(before.project.scene);
+      expect(after.project.revision).toBe(before.project.revision);
+      await page.goto(`${origin}/dashboard`);
+      await expect(page.locator(".dashboard-heading h1")).toBeVisible();
+      await page.screenshot({
+        path: "artifacts/browser/dashboard-dark.png",
+        fullPage: true,
+      });
+      await page.goto(origin);
+      await expect(page.locator('canvas[data-rendered="true"]')).toBeVisible({
+        timeout: 30000,
+      });
+      await page.screenshot({
+        path: "artifacts/browser/landing-dark.png",
+        fullPage: true,
+      });
+      await page.goto(`${origin}/settings`);
+      await expect(
+        page.getByRole("button", { name: "Dark", exact: true }),
+      ).toHaveAttribute("aria-pressed", "true");
+      await page.screenshot({
+        path: "artifacts/browser/settings-dark.png",
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect(
+        page.getByRole("button", { name: "Switch to light mode", exact: true }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth,
+        ),
+      ).toBe(true);
+      await page.screenshot({
+        path: "artifacts/browser/settings-dark-mobile.png",
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      await page.getByRole("button", { name: "System", exact: true }).click();
+      await page.emulateMedia({ colorScheme: "dark" });
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      await page.emulateMedia({ colorScheme: "light" });
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+      await page.getByRole("button", { name: "Light", exact: true }).click();
+      await page.goto(`${origin}/studio/${projectId}`);
+      await expect(page.locator('canvas[data-rendered="true"]')).toBeVisible({
+        timeout: 30000,
+      });
+    },
+  );
+  await record(
     "stale tab receives recoverable conflict without overwriting latest revision",
     async () => {
       const latest = await (

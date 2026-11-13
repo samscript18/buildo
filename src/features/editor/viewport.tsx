@@ -29,6 +29,7 @@ import type { Scene, SceneObject, AssetView } from "@/lib/scene";
 import { useEditor } from "./store";
 import { RoomShell } from "./room-shell";
 import { ShowcaseRoom } from "./showcase-room";
+import { useTheme } from "@/components/theme";
 class ModelBoundary extends Component<
   { children: React.ReactNode; onError: () => void },
   { error: boolean }
@@ -371,6 +372,7 @@ export default function Viewport({
   capture?: number;
   onCapture?: (data: string) => void;
 }) {
+  const { dark } = useTheme();
   const [dragging, setDragging] = useState(false);
   const [lost, setLost] = useState(false);
   const [loadError, setLoadError] = useState(false);
@@ -437,7 +439,7 @@ export default function Viewport({
         }}
         fallback={<div className="loading">WebGL is not available.</div>}
       >
-        <color attach="background" args={["#edece5"]} />
+        <color attach="background" args={[dark ? "#171d1a" : "#edece5"]} />
         <ambientLight intensity={scene.lighting === "evening" ? 0.5 : 1.8} />
         <directionalLight
           castShadow

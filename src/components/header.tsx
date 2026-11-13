@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Box, ArrowUpRight, LayoutGrid } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth-client";
+import { ThemeToggle } from "./theme";
 export function Header() {
   const path = usePathname();
   const cache = useQueryClient();
@@ -40,6 +41,7 @@ export function Header() {
         )}
       </nav>
       <div className="header-actions">
+        <ThemeToggle />
         {data && (
           <Link
             className="mobile-workspace"

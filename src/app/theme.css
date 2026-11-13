@@ -1,0 +1,548 @@
+/* Appearance tokens and final overrides for the existing warm visual system. */
+:root {
+  color-scheme: light;
+  --theme-surface: #fffefa;
+  --theme-raised: #f0f3e9;
+  --theme-sidebar: #f5f7ef;
+  --theme-highlight: #e6eddc;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #151a17;
+  --white: #1d2520;
+  --ink: #e9ede5;
+  --muted: #acb7a6;
+  --accent: #f28a60;
+  --button: #bc4827;
+  --line: #354236;
+  --soft: #253027;
+  --theme-surface: #1d2520;
+  --theme-raised: #253027;
+  --theme-sidebar: #19201b;
+  --theme-highlight: #354730;
+}
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  background: var(--theme-raised);
+}
+.header-actions .theme-toggle-label {
+  display: none;
+}
+.workspace-sidebar-top > .theme-toggle .theme-toggle-label {
+  display: none;
+}
+.workspace-sidebar-top {
+  gap: 10px;
+}
+.workspace-sidebar-compact .workspace-sidebar-top {
+  flex-direction: column;
+  gap: 18px;
+}
+.dashboard-nav > .theme-toggle {
+  justify-content: flex-start;
+  width: 100%;
+  padding: 11px 12px;
+  border-color: transparent;
+  font-size: 12px;
+}
+.workspace-sidebar-compact .theme-toggle-label {
+  display: none;
+}
+.workspace-sidebar-compact .theme-toggle {
+  justify-content: center;
+}
+.theme-settings {
+  margin-bottom: 24px;
+}
+.theme-settings h2 {
+  margin-bottom: 9px;
+}
+.theme-settings .eyebrow {
+  margin-bottom: 12px;
+}
+.theme-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  max-width: 420px;
+}
+.theme-options > button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px;
+  border: 1px solid var(--line);
+  background: var(--theme-surface);
+  color: var(--muted);
+  font-size: 12px;
+  border-radius: 10px;
+}
+.theme-options > button[aria-pressed="true"] {
+  color: var(--ink);
+  background: var(--theme-raised);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+html[data-theme="dark"] body {
+  color: var(--ink);
+  background: var(--paper);
+}
+html[data-theme="dark"] :is(.header, .workspace-shell, .dashboard-shell) {
+  background: var(--paper);
+  border-color: var(--line);
+}
+html[data-theme="dark"] :is(.dashboard-sidebar, .workspace-mobile-menu nav) {
+  background: var(--theme-sidebar);
+  border-color: var(--line);
+}
+html[data-theme="dark"]
+  :is(
+    .panel,
+    .card,
+    .form-card,
+    .password-checklist,
+    .dashboard-stat,
+    .dashboard-project-card,
+    .dashboard-library,
+    .dashboard-generation,
+    .dashboard-journey,
+    .dashboard-empty,
+    .dashboard-no-jobs,
+    .dashboard-library-empty,
+    .dashboard-asset,
+    .dashboard-refresh,
+    .dashboard-project-tools,
+    .password-checklist-footer
+  ) {
+  background: var(--theme-surface);
+  border-color: var(--line);
+  box-shadow: none;
+}
+html[data-theme="dark"]
+  :is(
+    input,
+    select,
+    textarea,
+    .panel input,
+    .panel select,
+    .panel textarea,
+    .dashboard-search input
+  ) {
+  color: var(--ink);
+  background: #171e19;
+  border-color: #42503f;
+  box-shadow: none;
+}
+html[data-theme="dark"] :is(input, textarea)::placeholder {
+  color: #8f9c88;
+}
+html[data-theme="dark"] :is(input, select, textarea):focus {
+  border-color: #a4b691;
+  box-shadow: 0 0 0 3px #a4b69118;
+}
+html[data-theme="dark"]
+  :is(
+    p,
+    small,
+    label,
+    .subtle,
+    .checkbox,
+    .eyebrow,
+    .optional,
+    .hero-kicker,
+    .hero-note,
+    .caption-eyebrow,
+    .section-aside,
+    .section-description,
+    .card-meta,
+    .card small,
+    .card-preview-label,
+    .preview-index,
+    .preview-bottom,
+    .preview-dimension,
+    .finish-picker > span,
+    .hero .canvas-caption p,
+    .form small,
+    .form-section-label,
+    .form-section-label > span,
+    .new-preview-caption p,
+    .room-specs small,
+    .panel h3,
+    .panel label,
+    .panel small,
+    .panel .subtle,
+    .panel details > summary,
+    .numeric-grid label,
+    .studio-title small,
+    .studio-title .eyebrow,
+    .rules,
+    .entry small,
+    footer,
+    .workspace-label,
+    .workspace-label small,
+    .dashboard-nav-label,
+    .sidebar-note p,
+    .sidebar-note > a,
+    .sidebar-profile small,
+    .dashboard-heading p,
+    .dashboard-breadcrumb,
+    .dashboard-breadcrumb > span:last-child,
+    .dashboard-stat small,
+    .dashboard-stat > div > span,
+    .dashboard-section-heading p,
+    .dashboard-section-heading h2 > span,
+    .dashboard-project-info > div,
+    .project-dimensions,
+    .dashboard-sort,
+    .dashboard-sort select,
+    .dashboard-filter,
+    .dashboard-filter select,
+    .dashboard-pagination > span,
+    .dashboard-asset small,
+    .dashboard-no-jobs p,
+    .dashboard-library-empty p,
+    .job-summary,
+    .dashboard-job p,
+    .generation-note,
+    .dashboard-journey small,
+    .dashboard-journey li > div,
+    .dashboard-endnote,
+    .resume-copy p,
+    .feature-story > p,
+    .feature-item p,
+    .faq-intro > p,
+    .faq-item p,
+    .invitation p,
+    .possibility-card span,
+    .possibility-top,
+    .community-preview-description,
+    .community-gate p,
+    .community-gate .eyebrow,
+    .challenge-preview-card > div:first-child > p
+  ) {
+  color: var(--muted);
+}
+html[data-theme="dark"]
+  :is(
+    h1,
+    h2,
+    h3,
+    .card-body h3,
+    .dashboard-project-info h3,
+    .dashboard-asset h3,
+    .dashboard-job h3,
+    .dashboard-stat strong,
+    .sidebar-profile > div,
+    .faq-item summary,
+    .possibility-card h3,
+    .room-specs > span,
+    .community-gate h2,
+    .challenge-preview-card > div:first-child > h2
+  ) {
+  color: var(--ink);
+}
+html[data-theme="dark"]
+  :is(
+    .header nav a,
+    .header-actions > .text-button,
+    .footer-links a,
+    .workspace-signout,
+    .workspace-signout svg,
+    .dashboard-nav > a,
+    .dashboard-nav > a > svg,
+    .workspace-mobile-menu summary,
+    .workspace-mobile-menu nav button
+  ) {
+  color: #b5c3ab;
+}
+html[data-theme="dark"] .workspace-mobile-menu > summary {
+  background: var(--theme-raised);
+  border-color: var(--line);
+}
+html[data-theme="dark"]
+  :is(
+    .dashboard-nav > a:hover,
+    .workspace-signout:hover,
+    .workspace-mobile-menu nav a:hover
+  ) {
+  background: var(--theme-raised);
+  color: var(--ink);
+}
+html[data-theme="dark"]
+  :is(.dashboard-nav > a.selected, .workspace-mobile-menu nav a.selected) {
+  background: var(--theme-highlight);
+  color: #e0edcf;
+}
+html[data-theme="dark"] .dashboard-nav > a.selected > svg {
+  color: #d2e5bb;
+}
+html[data-theme="dark"]
+  :is(
+    .workspace-label,
+    .sidebar-settings,
+    .sidebar-profile,
+    .panel h2,
+    .panel details,
+    .page-heading,
+    .form-section-label,
+    .room-specs,
+    .faq-item,
+    .entry,
+    footer,
+    .dashboard-project-tools,
+    .dashboard-asset,
+    .dashboard-job,
+    .dashboard-section-heading,
+    .dashboard-endnote,
+    .password-checklist-footer,
+    .password-checklist-heading
+  ) {
+  border-color: var(--line);
+}
+html[data-theme="dark"]
+  :is(
+    .step,
+    .step + .step,
+    .empty,
+    .notice,
+    .panel .notice,
+    .sidebar-note,
+    .asset-button,
+    .tabs,
+    .study-toggle,
+    .community-gate,
+    .challenge-preview-card,
+    .invitation,
+    .dashboard-resume,
+    .dashboard-challenge-card,
+    .dashboard-resume-loading
+  ) {
+  background: var(--theme-raised);
+  border-color: var(--line);
+  color: var(--muted);
+}
+html[data-theme="dark"] :is(.notice p, .panel .notice p) {
+  color: inherit;
+}
+html[data-theme="dark"] :is(.notice.error, .panel .notice.error) {
+  background: #38271e;
+  border-color: #76513a;
+  color: #f4c69e;
+}
+html[data-theme="dark"] :is(.dashboard-job-error, .workspace-signout-error) {
+  color: #f4c69e;
+}
+html[data-theme="dark"]
+  :is(
+    .asset-button:hover,
+    .button.secondary:hover,
+    .tabs a.active,
+    .study-toggle button[aria-pressed="true"]
+  ) {
+  background: var(--theme-highlight);
+  color: var(--ink);
+}
+html[data-theme="dark"] :is(.button.secondary, .google-button) {
+  color: var(--ink);
+  background: var(--theme-raised);
+  border-color: #4a5843;
+}
+html[data-theme="dark"] .button.dark {
+  background: #435a35;
+  color: #f0f5e9;
+}
+html[data-theme="dark"] .button:not(.secondary):not(.dark) {
+  color: #fffaf4;
+}
+html[data-theme="dark"]
+  :is(
+    .text-button,
+    .link-arrow,
+    .dashboard-no-jobs > a,
+    .dashboard-job a,
+    .dashboard-section-heading .text-button,
+    .dashboard-challenge-card > a
+  ) {
+  color: #c8d9b6;
+}
+html[data-theme="dark"]
+  :is(.card:hover, .dashboard-project-card:hover, .possibility-card:hover) {
+  border-color: #718760;
+}
+html[data-theme="dark"]
+  :is(
+    .step-icon,
+    .step:nth-child(2) .step-icon,
+    .step:nth-child(3) .step-icon,
+    .empty-icon,
+    .dashboard-section-heading h2 > span,
+    .sidebar-note > span,
+    .studio-back-link,
+    .workspace-label > span,
+    .sidebar-profile > span,
+    .asset-button > span,
+    .asset-box,
+    .dashboard-asset:nth-child(2) .asset-box,
+    .stat-icon,
+    .dashboard-stat:nth-child(2) .stat-icon,
+    .dashboard-stat:nth-child(3) .stat-icon,
+    .dashboard-empty > span,
+    .dashboard-library-empty > span,
+    .dashboard-no-jobs > span,
+    .job-icon,
+    .feature-item > span,
+    .faq-art,
+    .community-gate-icon,
+    .community-preview-label,
+    .pill,
+    .entry .pill,
+    .project-category,
+    .project-open-icon,
+    .resume-room-label,
+    .challenge-mini-icon,
+    .password-key,
+    .password-check-count,
+    .password-check-indicator,
+    .dashboard-journey li > span
+  ) {
+  background: #31412c;
+  color: #c0d3aa;
+  border-color: #485a3d;
+}
+html[data-theme="dark"]
+  :is(.new-project-preview, .hero-preview, .viewport-wrap) {
+  background: #171d1a;
+  border-color: var(--line);
+}
+html[data-theme="dark"] :is(.canvas-badge, .viewport-toolbar, .viewport-help) {
+  color: #c4d1b8;
+  background: #202b23ed;
+  border-color: #43503b;
+}
+html[data-theme="dark"] .tool {
+  color: #c1d0b1;
+}
+html[data-theme="dark"] .tool:hover {
+  background: #354730;
+}
+html[data-theme="dark"] .tool.active {
+  background: #536a42;
+  color: #f3f8ec;
+}
+html[data-theme="dark"] .panel {
+  scrollbar-color: #475b3c transparent;
+}
+html[data-theme="dark"]
+  :is(
+    .card-preview,
+    .dashboard-project-art,
+    .dashboard-project-art.tone-1,
+    .dashboard-project-art.tone-2,
+    .community-cover-preview,
+    .feature-blueprint
+  ) {
+  background: radial-gradient(ellipse at 50% 55%, #31402b, #202a23);
+}
+html[data-theme="dark"]
+  :is(.possibility-card.sand, .possibility-card.clay, .possibility-card.blush) {
+  background: #342f24;
+  border-color: #4b4435;
+}
+html[data-theme="dark"]
+  :is(.possibility-card.sage, .possibility-card.cream, .possibility-card.moss) {
+  background: #283325;
+  border-color: #3e4c36;
+}
+html[data-theme="dark"]
+  :is(
+    .feature-story h2 em,
+    .faq-intro h2 em,
+    .invitation h2 em,
+    .dashboard-heading h1 em,
+    .dashboard-challenge-card h2 em
+  ) {
+  color: #b7cb9e;
+}
+html[data-theme="dark"] .auth-provider-note {
+  color: var(--muted) !important;
+}
+html[data-theme="dark"]
+  :is(.password-checklist-heading p, .password-checklist-footer) {
+  color: var(--muted) !important;
+}
+html[data-theme="dark"] :is(.password-toggle, .password-check-items li) {
+  color: var(--muted);
+}
+html[data-theme="dark"] .password-toggle:hover {
+  color: var(--ink);
+  background: var(--theme-raised);
+}
+html[data-theme="dark"]
+  :is(
+    .password-check-count.complete,
+    .password-check-items li.complete,
+    .job-status.ready
+  ) {
+  color: #badf9b;
+}
+html[data-theme="dark"] .password-check-progress > span {
+  background: #3d4736;
+}
+html[data-theme="dark"] .password-check-progress > span.complete {
+  background: #99ba76;
+}
+html[data-theme="dark"]
+  :is(
+    .auth-divider:before,
+    .auth-divider:after,
+    .dashboard-skeleton > span,
+    .dashboard-skeleton > i
+  ) {
+  background: var(--line);
+}
+html[data-theme="dark"] .file-input::file-selector-button {
+  color: var(--ink);
+  background: var(--theme-raised);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .resume-room:before {
+  opacity: 0.2;
+}
+@media (max-width: 700px) {
+  .workspace-sidebar-compact .workspace-sidebar-top {
+    flex-direction: row;
+    gap: 10px;
+  }
+  .workspace-mobile-menu {
+    margin-left: auto;
+  }
+  .header-actions .theme-toggle {
+    min-width: 32px;
+    min-height: 36px;
+    padding: 7px;
+  }
+  .workspace-sidebar .sidebar-settings > .theme-toggle {
+    display: inline-flex;
+    width: 40px;
+    padding: 10px;
+  }
+  .workspace-sidebar .sidebar-settings > .theme-toggle .theme-toggle-label {
+    display: none;
+  }
+}

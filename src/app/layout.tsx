@@ -11,6 +11,8 @@ import { Providers } from "@/components/providers";
 import { SiteFrame } from "@/components/site-frame";
 import "./dashboard/dashboard.css";
 import "./workspace-shell.css";
+import "./theme.css";
+import { themeScript } from "@/lib/theme-script";
 export const metadata: Metadata = {
   metadataBase: siteUrl(),
   applicationName: "Buildo",
@@ -50,7 +52,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
         <Providers>
           <SiteFrame>{children}</SiteFrame>

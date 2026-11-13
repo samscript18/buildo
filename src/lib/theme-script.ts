@@ -1,0 +1,2 @@
+// Apply the local appearance preference before paint, without account or scene data.
+export const themeScript = `(function(){try{var v=localStorage.getItem('buildo-theme');document.documentElement.dataset.theme=(v==='dark'||(v!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches))?'dark':'light'}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}})()`;

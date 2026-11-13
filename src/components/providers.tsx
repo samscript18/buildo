@@ -1,6 +1,7 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { ThemeSync } from "./theme";
 export function Providers({ children }: { children: React.ReactNode }) {
   const [client] = useState(
     () =>
@@ -8,5 +9,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
         defaultOptions: { queries: { retry: 1, staleTime: 10000 } },
       }),
   );
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      <ThemeSync />
+      {children}
+    </QueryClientProvider>
+  );
 }
