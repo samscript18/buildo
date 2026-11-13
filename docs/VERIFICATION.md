@@ -1,6 +1,12 @@
 # Verification record
 
-Date: 2026-11-13. Initial repository contained only AGENTS.md; no application was overwritten. Root brief preserved. No credentials were printed or written into source. No production database or provider has been used.
+Date: 2026-11-13. Initial repository contained only AGENTS.md; no application was overwritten. Root brief preserved. No credentials were printed or written into source. Automated tests use disposable databases; the separate authorized live check uses the user's real project and provider task as recorded below.
+
+## Dark appearance and live-response correction
+
+Production build, lint, strict TypeScript and all 42 tests passed. Two new Lux3D adapter regression tests cover observed null output slots during generation and preservation of populated outputs. The isolated Chrome journey passed with theme switching, preference persistence after reload, OS light/dark changes in System mode, Settings selection state, visible mobile switch/no overflow, and unchanged saved scene JSON and revision. Existing auth/editor/save/conflict/publish/remix/challenge/privacy checks passed without uncaught browser errors. Dark landing, dashboard, studio and mobile Settings screenshots were visually inspected under ignored `artifacts/browser/*dark*.png`; test furniture is explicitly a local fixture, not Lux3D evidence. Final screenshot review corrected light backgrounds on dashboard asset cards and the mobile menu.
+
+Live evidence is separate: real task `7232531` completed; a 6,789,860-byte GLB was downloaded using the validated allowlist, and passed actual GLB inspection. Original bounds: X ±0.25m, Y ±0.23301132023334503m, Z ±0.18764230608940125m; 25,520 vertices and 12,582,912 texture pixels. One optional `KHR_materials_specular` warning was observed by the bounds inspector; original bytes were preserved. Actual Cloudinary raw upload and delivered SHA-256 passed. The separate `test:live-model` harness then rendered that genuine model from Cloudinary (HTTP 200, model/gltf-binary, CORS `*`), moved/rotated/resized it, saved it in a disposable MongoDB scene and restored exact scene JSON after reload. Real wood textures, upright orientation and floor placement were visually inspected in the actual screenshots. The user's original bedroom was not modified; this is genuine provider/storage/model evidence with an explicitly isolated test scene. Details and artifacts: INTEGRATION_VERIFICATION.md.
 
 ## Automated
 

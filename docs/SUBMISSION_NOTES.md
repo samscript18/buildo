@@ -6,11 +6,11 @@ No final report or public submission has been generated. No external post has be
 
 Next.js fullstack app; email/password accounts with MongoDB sessions; procedural indoor rooms; static GLB validation/import with user-attested Lux3D provenance; documented Lux3D text-to-3D requests and persisted reconciliation; Cloudinary raw model/cover storage adapters; mesh-based room editing, numeric transforms, history, autosave/revision conflicts, preview; immutable design snapshots, public gallery, creator pages, attributed permission-aware remix; admin-created pinned challenges, fixed submissions, UTC windows, unique non-self votes and deterministic results.
 
-These are implementation claims. Live Aholo/Cloudinary output and deployment remain unverified. Automated fixture tests and screenshots are not hackathon generation evidence. No real user/community statistics or winners are claimed. No real challenge has been created in a production database.
+Live Lux3D/Cloudinary evidence now exists for one genuine bedside table: task 7232531, ready asset 6af782945fc6d2fc20c801d4, original GLB and delivered hash verified, actual browser textures/orientation and exact transforms saved/reopened in a disposable MongoDB scene. Actual model screenshots are under ignored artifacts/live-model-browser/; they show an explicitly TEST ONLY room containing the genuine output. Earlier local mesh fixture screenshots remain test evidence only. Deployment, production challenge participation, final report and footage remain unverified. No real community statistics or winners are claimed. No real challenge has been created in a production database.
 
 ## Aholo usage
 
-Lux3D is intended to provide the core generated furniture/objects. The app’s adapter uses the English international OpenAPI. No actual generation exists yet. Genuine imported output can meet the asset workflow only with recorded task/source provenance and actual browser/storage evidence. Procedural room shells are original application geometry, never SpatialGen outputs. SpatialGen/Viewer interoperability is not claimed.
+Lux3D provides the generated bedside table through the app's documented international API workflow. One authorized real request was submitted by the user, and its original 6,789,860-byte self-contained GLB was stored in Cloudinary and used in the editor. Prompt, task ID, bounds, normalization, hash, observed response correction and browser evidence are recorded in INTEGRATION_VERIFICATION.md. No paid resubmission occurred. Procedural room shells are original application geometry, never SpatialGen outputs. SpatialGen/Viewer interoperability is not claimed.
 
 ## Original work and dependencies
 

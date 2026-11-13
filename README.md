@@ -1,5 +1,9 @@
 # Buildo
 
+Appearance: use the moon/sun control in the header or workspace sidebar. Settings → Appearance offers Light, Dark and System, saved in the current browser. Theme changes do not modify saved room materials or lighting.
+
+Live diagnostics (use your account email and existing IDs): `npm run test:preflight -- <email>`, `npm run generation:reconcile -- <email> <job-id>` to resume an existing job, or add `--inspect-output` to download/validate without uploading. These commands never create a generation. `npm run test:live-model -- <email> <asset-id>` renders an existing genuine Cloudinary asset in a disposable MongoDB test room and checks exact transform restoration; it leaves the real project unchanged and never publishes. Build first with `npm run build` and keep port 3102 available. Evidence goes to ignored `artifacts/live-model-browser/`.
+
 Imagine it. Build it. Explore it.
 
 A Next.js fullstack spatial design app built from the root AGENTS.md brief. Includes real account flows, procedural mesh rooms, a transform editor, MongoDB scenes, Lux3D job/import adapters, Cloudinary storage, immutable public snapshots, attributed remixing, and admin-created challenges with submissions and voting.

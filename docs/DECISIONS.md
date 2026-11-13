@@ -1,5 +1,9 @@
 # Decisions
 
+2026-11-13 appearance: offer Light/Dark/System with a device-default initial choice and browser-local persistence. Apply the resolved theme before paint. Theme affects interface and viewport backdrop only; it never changes room materials, lighting, scene JSON, revision or publication data. A permanent sidebar/header switch complements the Settings appearance controls. No new package is required.
+
+2026-11-13 live Lux3D observation: the running task response contains null output slots. Filter those slots before GLB selection instead of treating a successful running-status response as a provider failure. Clear the previous safe error when status polling succeeds. Never resubmit the paid task for this parsing issue.
+
 - One Next.js fullstack application; MongoDB stores scenes and domain data via Mongoose. Better Auth uses its official MongoDB adapter and secure library email/password flow. No mandatory email delivery, no password reset until a mail provider exists.
 - Scene convention: meters, right-handed, Y up, Euler XYZ radians. Normalize each model to centered X/Z and floor Y=0 with longest dimension 1m; keep source bytes and metadata. Object scaling preserves proportions by default.
 - Only self-contained GLB accepted initially. ZIP is never treated as a renderable URL. External references are rejected; genuine Lux3D exports can be repackaged externally and imported with task/source provenance.

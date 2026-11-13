@@ -4,11 +4,15 @@ This guide describes implemented controls. Credentials now pass read-only connec
 
 ## Current private bedroom check
 
-Use a regular Chrome or Safari window at `http://localhost:3000/login`, then choose Google sign-in. Google rejected the automated test browser; its session is separate from your regular browser. No paid generation has been submitted by the runner.
+Use a regular Chrome or Safari window at `http://localhost:3000/login`, then choose Google sign-in. Google rejected the automated test browser; its session is separate from your regular browser. The user has now submitted task `7232531` from their regular browser for project `6af77e405fc6d2fc20c801d2`. Resume that job; do not submit another paid generation.
 
-Create a private project named “Bedroom — live integration check” in the bedroom category. Submit exactly one generation with the approved prompt: “A contemporary oak bedside table with rounded corners and one drawer, isolated single furniture object”. Choose photorealistic style. Do not submit again if the result is delayed or uncertain. If transfer is blocked, review the existing job's observed provider hostname, configure only that trusted hostname in `LUX3D_DOWNLOAD_HOSTS`, restart the app, and resume the same job.
+The approved prompt is “A contemporary oak bedside table with rounded corners and one drawer, isolated single furniture object”, with photorealistic style. Do not submit again if the result is delayed or uncertain. If transfer is blocked, review the existing job's observed provider hostname, configure only that trusted hostname in `LUX3D_DOWNLOAD_HOSTS`, restart the app, and resume the same job.
 
 Once the asset is ready, add it, inspect textures and orientation, move it, rotate it, and resize it. Save, refresh, and compare the exact transforms. Keep the project private during this check. Record actual outcomes in INTEGRATION_VERIFICATION.md; preflight success alone does not complete the gate.
+
+## Appearance
+
+The moon/sun button in the public header or next to the workspace logo switches light/dark appearance. In the studio's compact sidebar it sits below the orange Buildo logo. Settings → Appearance offers Light, Dark and System. The choice persists in the current browser and System follows device changes. Interface appearance and the viewport backdrop change without modifying the room's saved materials or lighting.
 
 ## Complete product journey
 

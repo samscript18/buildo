@@ -13,7 +13,10 @@
     "format:check": "prettier --check .",
     "db:indexes": "node --conditions=react-server --import tsx --env-file=.env.local scripts/indexes.ts",
     "admin:grant": "tsx --env-file=.env.local scripts/admin.ts",
-    "test:browser": "node scripts/browser-check.mjs"
+    "test:browser": "node scripts/browser-check.mjs",
+    "test:preflight": "node --env-file=.env.local scripts/live-preflight.mjs",
+    "test:live-model": "node --env-file=.env.local scripts/live-model-browser.mjs",
+    "generation:reconcile": "node --conditions=react-server --import tsx --env-file=.env.local scripts/reconcile-generation.ts"
   },
   "dependencies": {
     "@better-auth/mongo-adapter": "^1.7.23",

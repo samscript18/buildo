@@ -104,7 +104,9 @@ try {
     await page
       .getByLabel("Give your space a name")
       .fill("Bedroom — live integration check");
-    await page.getByLabel("Category", { exact: true }).selectOption("bedroom");
+    await page
+      .getByRole("combobox", { name: /^Category/ })
+      .selectOption("bedroom");
     await page
       .getByLabel("Your starting idea", { exact: false })
       .fill(

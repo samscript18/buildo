@@ -2,7 +2,7 @@
 
 ## Status
 
-**Live integration gate blocked and unverified.** No `.env.local`, provider credentials, genuine Lux3D export, or deployed URL existed at initial inspection. No paid generation, Cloudinary upload or real-output rendering has occurred. Do not use automated fixture evidence as provider proof.
+**Core asset pipeline verified in a controlled isolated room.** The one real generation completed, its genuine GLB is stored in Cloudinary with a verified delivery hash, and the actual model rendered and retained exact transforms through MongoDB save/reload. The browser scene/account/database were disposable test records; the asset and provider/storage delivery were genuine. The user's original bedroom was left unchanged and still needs its manual placement/save check. This does not verify deployment, a real configured challenge or SpatialGen.
 
 2026-11-13 update: `node --env-file=.env.local scripts/live-preflight.mjs <account-email>` passed live MongoDB ping and existing-account lookup, Cloudinary authenticated ping, and an authenticated read-only Lux3D task-list request. No secrets or signed URLs are printed. Required credentials are configured; `LUX3D_DOWNLOAD_HOSTS` remains unset pending an observed provider output hostname. The real-account test paused at Google sign-in because Google rejected the automated browser. No project or paid generation was created by that runner. Continue manually in normal Chrome/Safari; a successful provider preflight does not prove OAuth callback, model generation, delivery, or scene restoration.
 
@@ -19,6 +19,26 @@
 - https://r3f.docs.pmnd.rs/getting-started/installation
 - https://gltf-transform.dev/modules/core/classes/NodeIO and /modules/functions/functions/getBounds
 
+## Actual bedroom generation, 2026-11-13
+
+The user reports being signed into Buildo in regular Chrome and submitted the single authorized generation from their own studio. Ownership-checked MongoDB inspection confirmed project `6af77e405fc6d2fc20c801d2` and durable job `6af77e815fc6d2fc20c801d3`, created at `2026-11-13T21:17:53.500Z`. Actual Lux3D task ID: `7232531`. Prompt: “A contemporary oak bedside table with rounded corners and one drawer, isolated single furniture object”. No second generation was submitted.
+
+The authenticated documented task-query endpoint returned HTTP 200, envelope `c: "0"`, task ID `7232531`, status `1` (running), and `outputs: [null, null]`. This exposed an adapter error: empty output slots during generation were rejected as malformed, producing the screenshot's misleading delivery message. The adapter now filters empty slots, retains actual output objects, and clears stale errors after a successful poll. Two focused regression cases cover that observed response and populated output preservation.
+
+A subsequent real query returned status `3` (success) with a ZIP on `tx-qhfpm-1258830046.cos.ap-shanghai.myqcloud.com` and a direct GLB on `qhsmodel.kujiale.com`. Only the authenticated result's exact GLB hostname was added to the ignored local `LUX3D_DOWNLOAD_HOSTS` configuration. The ZIP is not used as a model URL. Signed output URLs are excluded from evidence. Transfer is being checked using the original owned job, without another generation request.
+
+The first transfer attempt failed without creating a new provider task. A bounded fresh download and inspection succeeded: GLB 6,789,860 bytes, 25,520 vertices, 12,582,912 texture pixels; source bounds X ±0.25m, Y ±0.23301132023334503m, Z ±0.18764230608940125m. Normalization scale is 2, floor offset Y 0.23301132023334503. The inspector emitted an optional `KHR_materials_specular` warning; original bytes are preserved. Reconciliation of the same owned job succeeded using `npm run generation:reconcile -- <account-email> 6af77e815fc6d2fc20c801d3`. It uploads but cannot submit a generation. The local operator command also exposed and fixed Mongoose's named-export incompatibility in native Node; application model imports now use the default export.
+
+Actual asset ID `6af782945fc6d2fc20c801d4`, format `glb`, Cloudinary resource type `raw`, bytes `6789860`, SHA-256 `fc6045b31b9ee165000f13ae086db22cf7c1241b5532cee45a4c5e5308bdd9af`. The server downloaded Cloudinary's delivered bytes and verified that hash before the job became `ready`. No model conversion or fake replacement was used. The real user's room has not been modified by the operator command.
+
+### Genuine-model browser result
+
+Command: `npm run test:live-model -- <account-email> 6af782945fc6d2fc20c801d4`, after `npm run build`. The harness ownership-checks the actual ready asset in the configured database, then reads it without changing production records. It runs the real application on port 3102 with a disposable MongoDB database/account/private project and a private copy of that genuine asset's metadata. Provider and upload credentials are disabled in that test server; no generated-model response is intercepted, no new generation is created, and nothing is published.
+
+Observed at `2026-11-13T21:42:30.707Z` (22:42 Africa/Lagos): Cloudinary browser response HTTP 200, `Content-Type: model/gltf-binary`, `Access-Control-Allow-Origin: *`. The genuine oak table and embedded wood textures are visibly rendered upright with legs on the room floor. The original model is about 0.5m on its longest axis; the application's recorded normalization makes that axis 1m before per-instance scaling. Numeric inputs moved X to 1.1m, rotated Y to 30° (`0.5235987755982988` radians), and uniformly resized to `[0.8, 0.8, 0.8]`. Save reached revision 2; after a hard page reload the complete scene JSON matched exactly. No uncaught browser errors or model-unavailable notice occurred.
+
+Actual screenshots were visually inspected: `artifacts/live-model-browser/genuine-table-preview.png` and `genuine-table-restored.png`. Machine-readable result: `artifacts/live-model-browser/verification.json`. These ignored local artifacts contain the genuine model in an explicitly TEST ONLY room. The initial harness timeout was an overly exact Category selector; correcting the accessible selector completed the check, without changing application behaviour or repeating a provider generation.
+
 ## Implemented adapter contract (documentation evidence only)
 
 `POST https://api.aholo.ai/global/lux3d/v1/generate/text-to-3d/task/create`, raw API key in Authorization, JSON prompt/style/version G1/faceCount 50000/outputFormat [glb]. Successful envelope has string `c=0` and numeric task ID in `d`. Poll `GET .../task/get?taskid=ID`. Provider state in `d.status`: 0 initialized, 1 running, 3 succeeded, 4 failed, 6 cancelled. Query success is not job completion. GLB result is selected from `d.outputs[].content`, not a ZIP or NOT_REQUESTED placeholder. Result URLs expire after two hours according to the docs. No provider cancellation endpoint is assumed.
@@ -33,7 +53,7 @@ GLB validation checks magic/version/length, embedded resources, accessors, mesh/
 
 - Automated: see `docs/VERIFICATION.md`; isolated local mesh parsing, editor history, exact database scene round-trip and domain invariants. Fixtures are explicitly local test data.
 - Browser: temporary database and local intercepted mesh, never genuine Lux3D/Cloudinary evidence. Screenshots are marked by fixture names and stored under ignored artifacts.
-- Live provider: read-only authentication preflight passed; generation/upload/rendering gate not run.
+- Live provider/storage/model browser: actual user-submitted task completed; genuine GLB uploaded, hash/CORS/textures/rendering verified; exact transforms saved/reopened using a disposable MongoDB scene. Original user bedroom placement/save remains a manual check.
 - Deployment: not run.
 - Furnished-room performance: not measured. Software-rendered browser smoke checks are not ordinary-laptop performance evidence.
 

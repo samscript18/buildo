@@ -2,15 +2,15 @@
 
 Initial inspection: no .env.local and no user-supplied Lux3D asset.
 
-Update 2026-11-13: local credentials are now configured. The read-only live preflight passed MongoDB connectivity and existing-account lookup, Cloudinary authentication, and the authenticated Lux3D task-list request. These services are no longer blocked on credentials. `LUX3D_DOWNLOAD_HOSTS` remains unset pending an actual provider output. No generation or upload has been performed.
+Update 2026-11-13: local credentials are configured and passed preflight. The user submitted the one authorized generation in regular Chrome; task `7232531` completed and its genuine GLB is now stored in Cloudinary as ready asset `6af782945fc6d2fc20c801d4`. Delivered bytes match the source SHA-256. The actual GLB host `qhsmodel.kujiale.com` is configured locally in `LUX3D_DOWNLOAD_HOSTS`. No credential variable is currently missing for this path. Genuine Cloudinary browser delivery, textures, orientation, numeric transforms and exact MongoDB save/reload passed in a disposable test room. The user's original bedroom still needs the object placed and saved manually; it was not modified by that harness.
 
 The real-account browser check paused before creating a project or submitting a generation: Google rejected the automated Chrome browser as unsupported. Use the normal Chrome/Safari application at `http://localhost:3000/login` for manual Google consent and callback verification. Do not bypass Google's browser checks or transfer browser sessions. The user has authorized one bedside-table generation only; no automatic resubmission is permitted.
 
 - MongoDB: MONGODB_URI configured; connectivity verified. Real-account scene persistence still needs live verification.
 - Authentication: BETTER_AUTH_SECRET and BETTER_AUTH_URL configured; real Google callback requires the normal-browser check above.
-- Cloudinary: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET configured; authenticated ping passed. Model upload/delivery still unverified.
-- Lux3D: LUX3D_API_KEY configured; authenticated read-only task listing passed. No generation has been performed.
-- LUX3D_DOWNLOAD_HOSTS: exact trusted output storage hostnames observed in authenticated provider results; do not guess or allow arbitrary downloads.
+- Cloudinary: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET configured; actual 6,789,860-byte raw GLB upload and delivered hash verified.
+- Lux3D: LUX3D_API_KEY configured; task `7232531` completed. Do not resubmit it.
+- LUX3D_DOWNLOAD_HOSTS: exact observed GLB hostname configured; continue validating future output hosts rather than guessing or allowing arbitrary downloads.
 - SpatialGen: no actual output or compatibility evidence; environment generation stays unavailable.
 - No deployment target/domain or running-project footage. Final submission report must wait for actual screenshots and verified workflow.
 
