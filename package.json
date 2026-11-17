@@ -16,7 +16,10 @@
     "test:browser": "node scripts/browser-check.mjs",
     "test:preflight": "node --env-file=.env.local scripts/live-preflight.mjs",
     "test:live-model": "node --env-file=.env.local scripts/live-model-browser.mjs",
-    "generation:reconcile": "node --conditions=react-server --import tsx --env-file=.env.local scripts/reconcile-generation.ts"
+    "generation:reconcile": "node --conditions=react-server --import tsx --env-file=.env.local scripts/reconcile-generation.ts",
+    "jobs:reconcile": "node --conditions=react-server --import tsx scripts/reconcile-generations.ts",
+    "db:indexes:hosted": "node --conditions=react-server --import tsx scripts/indexes.ts",
+    "start:render": "next start -H 0.0.0.0"
   },
   "dependencies": {
     "@better-auth/mongo-adapter": "^1.7.23",

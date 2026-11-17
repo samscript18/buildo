@@ -17,6 +17,7 @@ vi.mock("../src/server/storage", () => ({
     throw new Error("simulated transfer failure");
   }),
   downloadModel: vi.fn(async () => new Uint8Array()),
+  verifyModelDelivery: vi.fn(async () => {}),
 }));
 vi.mock("../src/server/lux3d", () => ({
   createLux: vi.fn(),
@@ -44,7 +45,17 @@ import { challenges, submissions, vote } from "../src/server/challenges";
 import {
   generationCollection,
   generationItem,
+  reconcileDueGenerations,
+  retryGenerationTransfer,
+  generationView,
 } from "../src/server/generations";
+import {
+  uploadModel,
+  downloadModel,
+  verifyModelDelivery,
+} from "../src/server/storage";
+import { AppError } from "../src/server/errors";
+import { allowAssetRemix } from "../src/server/assets";
 import { createLux, queryLux } from "../src/server/lux3d";
 const alice = { id: "alice-test", name: "Test Alice", role: "user" },
   bob = { id: "bob-test", name: "Test Bob", role: "user" };
@@ -67,6 +78,10 @@ beforeAll(async () => {
 beforeEach(async () => {
   await Promise.all(allModels.map((m) => m.collection.deleteMany({})));
   vi.clearAllMocks();
+  vi.mocked(uploadModel)
+    .mockReset()
+    .mockRejectedValue(new Error("simulated transfer failure"));
+  vi.mocked(verifyModelDelivery).mockReset().mockResolvedValue();
 });
 afterAll(async () => {
   await mongoose.disconnect();
@@ -98,6 +113,32 @@ async function setup() {
   return { a, p, s };
 }
 describe("database invariants (isolated disposable MongoDB only)", () => {
+  it("requires owner confirmation before enabling model reuse", async () => {
+    const { a } = await setup();
+    await Asset.updateOne(
+      { _id: a._id },
+      { $set: { allowReuse: false, rightsConfirmed: false } },
+    );
+    await expect(
+      allowAssetRemix(request({ rightsConfirmed: true }), String(a._id), bob),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+    await expect(
+      allowAssetRemix(
+        request({ rightsConfirmed: false }),
+        String(a._id),
+        alice,
+      ),
+    ).rejects.toThrow();
+    expect((await Asset.findById(a._id))!.allowReuse).toBe(false);
+    await allowAssetRemix(
+      request({ rightsConfirmed: true }),
+      String(a._id),
+      alice,
+    );
+    const permitted = await Asset.findById(a._id);
+    expect(permitted!.allowReuse).toBe(true);
+    expect(permitted!.rightsConfirmed).toBe(true);
+  });
   it("denies cross-user reads and asset saves", async () => {
     const { p, s } = await setup();
     await expect(ownProject(String(p._id), bob.id)).rejects.toMatchObject({
@@ -305,6 +346,150 @@ it("keeps another finalizer from acquiring an active lease", async () => {
   const result = await generationItem(String(job._id), alice);
   expect(result.state).toBe("transferring");
   expect(queryLux).not.toHaveBeenCalled();
+});
+
+it("scheduler recovers a stored Cloudinary checkpoint without querying, downloading or generating again", async () => {
+  const checkpoint: import("../src/server/storage").ModelCheckpoint = {
+    secureUrl: "https://res.cloudinary.com/test/raw/upload/real.glb",
+    publicId: "test/real.glb",
+    resourceType: "raw",
+    format: "glb",
+    bytes: 1234,
+    sha256: "test",
+    vertices: 3,
+    texturePixels: 0,
+    bounds: { min: [0, 0, 0], max: [1, 1, 1] },
+    normalization: { scale: 1, offset: [0, 0, 0] },
+  };
+  const job = await Job.create({
+    ownerId: alice.id,
+    projectId: "test",
+    state: "transfer_failed",
+    providerTaskId: "checkpoint-only",
+    prompt: "Retained model",
+    requestKey: crypto.randomUUID(),
+    transferCheckpoint: checkpoint,
+    stage: "verify_delivery",
+    failure: { retryable: true },
+  });
+  const result = await reconcileDueGenerations();
+  expect(result).toContainEqual({ id: String(job._id), state: "ready" });
+  expect(queryLux).not.toHaveBeenCalled();
+  expect(downloadModel).not.toHaveBeenCalled();
+  expect(uploadModel).not.toHaveBeenCalled();
+  expect(createLux).not.toHaveBeenCalled();
+  expect(verifyModelDelivery).toHaveBeenCalledWith(
+    expect.objectContaining({ sha256: "test" }),
+  );
+  expect(await Asset.countDocuments({ generationId: String(job._id) })).toBe(1);
+  const saved = (await Job.findById(job._id))!;
+  expect(saved.transferCheckpoint).toBeUndefined();
+  expect(saved.leaseToken).toBeUndefined();
+});
+
+it("records bounded failure stages and backs off, then permits owner-only browser delivery retry", async () => {
+  const job = await Job.create({
+    ownerId: alice.id,
+    projectId: "test",
+    state: "generating",
+    providerTaskId: "stage-test",
+    prompt: "test",
+    requestKey: crypto.randomUUID(),
+  });
+  vi.mocked(queryLux).mockResolvedValue({
+    taskId: 1,
+    status: 3,
+    outputs: [{ content: "https://example.com/model.glb" }],
+  });
+  vi.mocked(uploadModel).mockImplementation(async (_bytes, _owner, stage) => {
+    await stage?.("upload");
+    throw new DOMException(
+      "secret upstream URL must never be retained",
+      "TimeoutError",
+    );
+  });
+  const failed = await generationItem(String(job._id), alice);
+  expect(failed.failure).toMatchObject({
+    stage: "upload",
+    code: "TIMEOUT",
+    retryable: true,
+  });
+  expect(JSON.stringify(failed)).not.toContain("secret upstream");
+  expect(new Date(failed.nextPollAt!).getTime()).toBeGreaterThan(Date.now());
+  await generationItem(String(job._id), alice);
+  expect(uploadModel).toHaveBeenCalledTimes(1);
+  await expect(
+    retryGenerationTransfer(String(job._id), bob),
+  ).rejects.toMatchObject({ code: "DELIVERY_BUSY" });
+  await retryGenerationTransfer(String(job._id), alice);
+  expect(uploadModel).toHaveBeenCalledTimes(2);
+  expect(createLux).not.toHaveBeenCalled();
+});
+
+it("pauses configuration failures and never exposes checkpoints or lease tokens to clients", async () => {
+  const job = await Job.create({
+    ownerId: alice.id,
+    state: "generating",
+    projectId: "test",
+    prompt: "test",
+    providerTaskId: "config-test",
+    requestKey: crypto.randomUUID(),
+  });
+  vi.mocked(queryLux).mockResolvedValue({
+    taskId: 1,
+    status: 3,
+    outputs: [{ content: "https://example.com/model.glb" }],
+  });
+  vi.mocked(uploadModel).mockRejectedValue(
+    new AppError(503, "NOT_CONFIGURED", "secret"),
+  );
+  const failed = await generationItem(String(job._id), alice);
+  expect(failed.failure).toMatchObject({
+    code: "NOT_CONFIGURED",
+    retryable: false,
+  });
+  expect(await reconcileDueGenerations()).toEqual([]);
+  const safe = generationView({
+    ...job.toObject(),
+    leaseToken: "private-token",
+    transferCheckpoint: { secureUrl: "private-storage" },
+  } as unknown as import("../src/server/models").JobRecord);
+  expect(JSON.stringify(safe)).not.toMatch(
+    /private-token|private-storage|transferCheckpoint|leaseToken/,
+  );
+});
+
+it("fences an expired finalizer from overwriting a newer lease", async () => {
+  const job = await Job.create({
+    ownerId: alice.id,
+    state: "generating",
+    projectId: "test",
+    prompt: "test",
+    providerTaskId: "fence-test",
+    requestKey: crypto.randomUUID(),
+  });
+  vi.mocked(queryLux).mockImplementation(async () => {
+    await Job.updateOne(
+      { _id: job._id },
+      {
+        $set: {
+          leaseToken: "newer-worker",
+          state: "ready",
+          assetId: "verified-newer-asset",
+        },
+      },
+    );
+    return {
+      taskId: 1,
+      status: 3,
+      outputs: [{ content: "https://example.com/model.glb" }],
+    };
+  });
+  const result = await generationItem(String(job._id), alice);
+  expect(result.state).toBe("ready");
+  expect(result.assetId).toBe("verified-newer-asset");
+  expect(uploadModel).not.toHaveBeenCalled();
+  expect((await Job.findById(job._id))!.leaseToken).toBe("newer-worker");
 });
 it("enforces aggregate scene costs on repeated heavy models", async () => {
   const { a, s } = await setup();

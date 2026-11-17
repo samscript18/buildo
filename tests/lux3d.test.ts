@@ -5,6 +5,21 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
 });
+it("retains the provider HTTP status without exposing its response body", async () => {
+  vi.stubEnv("LUX3D_API_KEY", "test-only");
+  vi.stubGlobal(
+    "fetch",
+    vi
+      .fn()
+      .mockResolvedValue(
+        new Response("sensitive provider body", { status: 401 }),
+      ),
+  );
+  await expect(queryLux("1")).rejects.toMatchObject({
+    code: "HTTP_401",
+    message: "The generation provider could not complete the request.",
+  });
+});
 it("accepts the observed running Lux3D response with null output slots", async () => {
   vi.stubEnv("LUX3D_API_KEY", "test-only");
   vi.stubGlobal(

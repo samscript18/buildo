@@ -6,6 +6,7 @@ import { request as httpsRequest } from "node:https";
 import { isIP } from "node:net";
 import { inspectGlb, MAX_MODEL_BYTES } from "@/lib/glb";
 import { configured, fail } from "./errors";
+import type { TransferStage } from "./generation-failures";
 function cloud() {
   cloudinary.config({
     cloud_name: configured("CLOUDINARY_CLOUD_NAME"),
@@ -15,7 +16,15 @@ function cloud() {
   });
   return cloudinary;
 }
-export async function uploadModel(bytes: Uint8Array, ownerId: string) {
+export async function uploadModel(
+  bytes: Uint8Array,
+  ownerId: string,
+  onStage?: (
+    stage: TransferStage,
+    checkpoint?: ModelCheckpoint,
+  ) => Promise<void>,
+) {
+  await onStage?.("validate");
   let inspected;
   try {
     inspected = await inspectGlb(bytes);
@@ -24,6 +33,7 @@ export async function uploadModel(bytes: Uint8Array, ownerId: string) {
   }
   const sha256 = createHash("sha256").update(bytes).digest("hex");
   const publicId = `buildo/${ownerId}/${sha256}.glb`;
+  await onStage?.("upload");
   const result = await new Promise<UploadApiResponse>((resolve, reject) => {
     const stream = cloud().uploader.upload_stream(
       {
@@ -38,12 +48,7 @@ export async function uploadModel(bytes: Uint8Array, ownerId: string) {
   });
   if (!result.secure_url.startsWith("https://res.cloudinary.com/"))
     fail(502, "STORAGE", "Unexpected storage response.");
-  const delivered = await boundedDownload(result.secure_url, [
-    "res.cloudinary.com",
-  ]);
-  if (createHash("sha256").update(delivered).digest("hex") !== sha256)
-    fail(502, "STORAGE_INTEGRITY", "Stored model could not be verified.");
-  return {
+  const checkpoint = {
     ...inspected,
     secureUrl: result.secure_url,
     publicId: result.public_id,
@@ -52,6 +57,26 @@ export async function uploadModel(bytes: Uint8Array, ownerId: string) {
     bytes: result.bytes,
     sha256,
   };
+  await onStage?.("verify_delivery", checkpoint);
+  await verifyModelDelivery(checkpoint);
+  return checkpoint;
+}
+export type ModelCheckpoint = Awaited<ReturnType<typeof inspectGlb>> & {
+  sha256: string;
+  publicId: string;
+  secureUrl: string;
+  resourceType: UploadApiResponse["resource_type"];
+  format: string;
+  bytes: number;
+};
+export async function verifyModelDelivery(checkpoint: ModelCheckpoint) {
+  const delivered = await boundedDownload(checkpoint.secureUrl, [
+    "res.cloudinary.com",
+  ]);
+  if (
+    createHash("sha256").update(delivered).digest("hex") !== checkpoint.sha256
+  )
+    fail(502, "STORAGE_INTEGRITY", "Stored model could not be verified.");
 }
 export async function uploadCover(data: string, ownerId: string) {
   if (
@@ -66,7 +91,10 @@ export async function uploadCover(data: string, ownerId: string) {
     resource_type: "image",
     public_id: `buildo/covers/${ownerId}/${crypto.randomUUID()}`,
     overwrite: false,
+    timeout: 60000,
   });
+  if (!r.secure_url.startsWith("https://res.cloudinary.com/"))
+    fail(502, "STORAGE", "Unexpected cover storage response.");
   return r.secure_url;
 }
 export function publicAddress(ip: string) {
@@ -122,7 +150,15 @@ export async function boundedDownload(url: string, hosts: string[]) {
           Number(response.headers["content-length"] || 0) > MAX_MODEL_BYTES
         ) {
           response.destroy();
-          reject(new Error("Model delivery failed or exceeds 25MB."));
+          reject(
+            new (class extends Error {
+              code =
+                Number(response.headers["content-length"] || 0) >
+                MAX_MODEL_BYTES
+                  ? "MODEL_SIZE"
+                  : `HTTP_${response.statusCode}`;
+            })(),
+          );
           return;
         }
         const chunks: Buffer[] = [];

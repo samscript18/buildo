@@ -5,8 +5,12 @@ import { identity, getAuth, optionalIdentity } from "./auth";
 import { errorResponse, fail } from "./errors";
 import { origin, id } from "./http";
 import { projectCollection, projectItem, publish, designs } from "./projects";
-import { generationCollection, generationItem } from "./generations";
-import { assets } from "./assets";
+import {
+  generationCollection,
+  generationItem,
+  retryGenerationTransfer,
+} from "./generations";
+import { assets, allowAssetRemix } from "./assets";
 import { challenges, submissions, vote } from "./challenges";
 import { Publication } from "./models";
 import { designSummary } from "./community-preview";
@@ -101,9 +105,15 @@ export async function route(request: Request, path: string[]) {
         allowed(["GET", "PATCH", "DELETE"]);
         result = await projectItem(request, key, user);
       } else fail(404, "NOT_FOUND", "Route not found.");
+    } else if (group === "assets" && key && action === "allow-remix") {
+      allowed(["POST"]);
+      result = await allowAssetRemix(request, key, await identity(request));
     } else if (group === "assets" && !key) {
       allowed(["GET", "POST"]);
       result = await assets(request, await identity(request));
+    } else if (group === "generations" && action === "retry-transfer" && key) {
+      allowed(["POST"]);
+      result = await retryGenerationTransfer(key, await identity(request));
     } else if (group === "generations" && !action) {
       const user = await identity(request);
       allowed(key ? ["GET"] : ["GET", "POST"]);

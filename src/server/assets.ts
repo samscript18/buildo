@@ -3,8 +3,25 @@ import { z } from "zod";
 import { Asset, view } from "./models";
 import { fail } from "./errors";
 import { uploadModel } from "./storage";
-import { rate, pagination, readBounded } from "./http";
+import { rate, pagination, readBounded, id, body } from "./http";
 import { MAX_MODEL_BYTES } from "@/lib/glb";
+export async function allowAssetRemix(
+  request: Request,
+  assetId: string,
+  user: { id: string },
+) {
+  z.object({ rightsConfirmed: z.literal(true) })
+    .strict()
+    .parse(await body(request));
+  await rate(`reuse:${user.id}`, 20, 60);
+  const asset = await Asset.findOneAndUpdate(
+    { _id: id(assetId), ownerId: user.id, status: "ready" },
+    { $set: { allowReuse: true, rightsConfirmed: true } },
+    { returnDocument: "after" },
+  );
+  if (!asset) fail(404, "NOT_FOUND", "Asset not found.");
+  return { id: String(asset._id), allowReuse: true };
+}
 export async function assets(request: Request, user: { id: string }) {
   if (request.method === "GET") {
     const { skip, limit } = pagination(request);

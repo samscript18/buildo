@@ -27,6 +27,8 @@ type Job = {
   prompt: string;
   safeError?: string;
   assetId?: string;
+  nextPollAt?: string;
+  failure?: { retryable: boolean; reference: string };
 };
 function Generation({
   projectId,
@@ -70,7 +72,12 @@ function Generation({
           }
         }
         if (!stopped) await refetch();
-      } catch {}
+      } catch {
+        if (!stopped)
+          setError(
+            "We could not refresh delivery. Check your connection and try Refresh status. Your existing generation is retained.",
+          );
+      }
     }, 15000);
     return () => {
       stopped = true;
@@ -144,6 +151,27 @@ function Generation({
             <strong>{j.state.replace("_", " ")}</strong>
             <p className="subtle">{j.prompt}</p>
             {j.safeError && <p>{j.safeError}</p>}
+            {j.failure?.reference && (
+              <small>Support reference: {j.failure.reference}</small>
+            )}
+            {(j.state === "transfer_failed" ||
+              j.failure?.retryable === false) && (
+              <button
+                className="button secondary"
+                onClick={async () => {
+                  try {
+                    await post(`generations/${j.id}/retry-transfer`, {});
+                    await q.refetch();
+                    await cache.invalidateQueries({ queryKey: ["assets"] });
+                    onReady();
+                  } catch (e) {
+                    setError((e as Error).message);
+                  }
+                }}
+              >
+                Retry delivery
+              </button>
+            )}
             <button
               className="text-button"
               onClick={async () => {

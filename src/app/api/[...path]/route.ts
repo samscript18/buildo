@@ -1,6 +1,6 @@
 import { route } from "@/server/router";
 export const runtime = "nodejs";
-export const maxDuration = 120;
+export const maxDuration = 180;
 async function handler(
   request: Request,
   context: { params: Promise<{ path: string[] }> },

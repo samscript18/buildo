@@ -267,6 +267,7 @@ export function ImportForm({ onDone }: { onDone?: () => void }) {
   );
 }
 export function AssetLibrary() {
+  const [permissionError, setPermissionError] = useState("");
   const [page, setPage] = useState(1);
   const q = useQuery({
     queryKey: ["assets", page],
@@ -283,6 +284,7 @@ export function AssetLibrary() {
         </PageHeading>
         <div className="two-col">
           <div>
+            {permissionError && <Notice error>{permissionError}</Notice>}
             {q.isPending ? (
               <Notice>Loading library…</Notice>
             ) : q.error ? (
@@ -299,6 +301,30 @@ export function AssetLibrary() {
                         : "Private reuse only"}
                     </small>
                     <p className="subtle">Task: {a.taskId}</p>
+                    {!a.allowReuse && (
+                      <form
+                        className="form"
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          try {
+                            await post(`assets/${a.id}/allow-remix`, {
+                              rightsConfirmed: true,
+                            });
+                            await q.refetch();
+                          } catch (error) {
+                            setPermissionError((error as Error).message);
+                          }
+                        }}
+                      >
+                        <label className="checkbox">
+                          <input type="checkbox" required />I have rights to
+                          share this model and allow it in community remixes.
+                        </label>
+                        <button className="button secondary">
+                          Allow remix reuse
+                        </button>
+                      </form>
+                    )}
                   </div>
                 ))}
               </div>

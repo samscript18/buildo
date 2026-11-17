@@ -6,7 +6,25 @@ import { ownProject } from "./projects";
 import { body, id, pagination, rate } from "./http";
 import { configured, fail } from "./errors";
 import { createLux, queryLux } from "./lux3d";
-import { downloadModel, uploadModel } from "./storage";
+import { downloadModel, uploadModel, verifyModelDelivery } from "./storage";
+import { generationFailure, type TransferStage } from "./generation-failures";
+import type { JobRecord } from "./models";
+export function generationView(record: JobRecord) {
+  const {
+    transferCheckpoint: _checkpoint,
+    leaseToken: _token,
+    leaseUntil: _lease,
+    requestHash: _hash,
+    activeSlot: _slot,
+    ...safe
+  } = record;
+  void _checkpoint;
+  void _token;
+  void _lease;
+  void _hash;
+  void _slot;
+  return view(safe);
+}
 export async function generationCollection(
   request: Request,
   user: { id: string },
@@ -20,12 +38,7 @@ export async function generationCollection(
           .skip(skip)
           .limit(limit)
           .lean()
-      ).map((j) => ({
-        ...view(j),
-        requestHash: undefined,
-        leaseUntil: undefined,
-        activeSlot: undefined,
-      })),
+      ).map(generationView),
     };
   }
   const input = z
@@ -70,7 +83,7 @@ export async function generationCollection(
         "IDEMPOTENCY",
         "This request key was already used for a different prompt.",
       );
-    return view(existing.toObject());
+    return generationView(existing.toObject());
   }
   configured("LUX3D_API_KEY");
   configured("CLOUDINARY_CLOUD_NAME");
@@ -97,7 +110,7 @@ export async function generationCollection(
       "Submission could not be confirmed. Do not resubmit until the provider account has been checked.";
     await job.save();
   }
-  return view(job.toObject());
+  return generationView(job.toObject());
 }
 export async function generationItem(jobId: string, user: { id: string }) {
   let job = await Job.findOne({ _id: id(jobId), ownerId: user.id });
@@ -108,7 +121,11 @@ export async function generationItem(jobId: string, user: { id: string }) {
     Date.now() - job.createdAt.getTime() > 60000
   ) {
     await Job.updateOne(
-      { _id: job._id, state: { $in: ["queued", "generating"] } },
+      {
+        _id: job._id,
+        state: { $in: ["queued", "generating"] },
+        providerTaskId: { $exists: false },
+      },
       {
         $set: {
           state: "unknown",
@@ -121,15 +138,25 @@ export async function generationItem(jobId: string, user: { id: string }) {
   }
   if (
     !job.providerTaskId ||
-    !["generating", "transferring", "transfer_failed"].includes(job.state)
+    !["generating", "transferring", "transfer_failed"].includes(job.state) ||
+    job.failure?.retryable === false ||
+    (job.transferAttempts || 0) >= 8
   )
-    return view(job.toObject());
+    return generationView(job.toObject());
+  const token = crypto.randomUUID();
   const lease = await Job.findOneAndUpdate(
     {
       _id: job._id,
       ownerId: user.id,
       state: { $in: ["generating", "transferring", "transfer_failed"] },
+      "failure.retryable": { $ne: false },
       $and: [
+        {
+          $or: [
+            { transferAttempts: { $exists: false } },
+            { transferAttempts: { $lt: 8 } },
+          ],
+        },
         {
           $or: [
             { leaseUntil: { $exists: false } },
@@ -146,85 +173,247 @@ export async function generationItem(jobId: string, user: { id: string }) {
     },
     {
       $set: {
-        leaseUntil: new Date(Date.now() + 180000),
+        leaseToken: token,
+        leaseUntil: new Date(Date.now() + 300000),
         nextPollAt: new Date(Date.now() + 15000),
       },
     },
     { returnDocument: "after" },
   );
-  if (!lease) return view(job.toObject());
+  if (!lease) return generationView(job.toObject());
+  let stage: TransferStage = "provider_status";
+  async function persist() {
+    const record = lease!.toObject();
+    const fields = [
+      "state",
+      "stage",
+      "safeError",
+      "outputHost",
+      "nextPollAt",
+      "transferCheckpoint",
+      "transferAttempts",
+      "recoveryFailures",
+      "failure",
+      "failureHistory",
+      "assetId",
+      "activeSlot",
+    ] as const;
+    const set: Record<string, unknown> = {},
+      unset: Record<string, 1> = {};
+    for (const field of fields) {
+      if (record[field] === undefined) unset[field] = 1;
+      else set[field] = record[field];
+    }
+    const updated = await Job.updateOne(
+      { _id: lease!._id, leaseToken: token },
+      { $set: set, $unset: unset },
+    );
+    if (!updated.matchedCount)
+      fail(
+        409,
+        "LEASE_LOST",
+        "Recovery is already being handled by another process.",
+      );
+  }
+  async function setStage(
+    next: TransferStage,
+    checkpoint?: Awaited<ReturnType<typeof uploadModel>>,
+  ) {
+    stage = next;
+    lease!.stage = next;
+    if (checkpoint) lease!.transferCheckpoint = checkpoint;
+    await persist();
+  }
   try {
-    const result = await queryLux(lease.providerTaskId!);
     lease.safeError = undefined;
-    if (result.status === 4 || result.status === 6) {
-      lease.state = "failed";
-      lease.safeError =
-        "The provider did not produce an asset. A new request requires an explicit action.";
-      lease.activeSlot = undefined;
-    } else if (result.status === 3) {
-      const output = result.outputs?.find((o) => {
-        try {
-          return new URL(o.content).pathname.toLowerCase().endsWith(".glb");
-        } catch {
-          return false;
-        }
-      });
-      if (!output)
-        fail(
-          502,
-          "OUTPUT_FORMAT",
-          "No usable GLB output was returned. Import a self-contained export instead.",
-        );
-      lease.state = "transferring";
-      lease.outputHost = new URL(output.content).hostname;
-      await lease.save();
-      let asset = await Asset.findOne({ generationId: String(lease._id) });
-      if (!asset) {
-        const stored = await uploadModel(
+    lease.failure = undefined;
+    let stored = lease.transferCheckpoint;
+    if (!stored) {
+      await setStage("provider_status");
+      const result = await queryLux(lease.providerTaskId!);
+      if (result.status === 4 || result.status === 6) {
+        lease.state = "failed";
+        lease.safeError =
+          "The provider did not produce an asset. Buildo will not submit another generation automatically.";
+        lease.activeSlot = undefined;
+      } else if (result.status === 3) {
+        lease.state = "transferring";
+        const output = result.outputs.find((o) => {
+          try {
+            return new URL(o.content).pathname.toLowerCase().endsWith(".glb");
+          } catch {
+            return false;
+          }
+        });
+        if (!output)
+          fail(
+            502,
+            "OUTPUT_FORMAT",
+            "The provider has not returned a usable GLB.",
+          );
+        lease.state = "transferring";
+        lease.outputHost = new URL(output.content).hostname;
+        lease.transferAttempts = (lease.transferAttempts || 0) + 1;
+        await setStage("download");
+        stored = await uploadModel(
           await downloadModel(output.content),
           user.id,
+          setStage,
         );
-        asset = await Asset.create({
-          ...stored,
-          ownerId: user.id,
-          name: lease.prompt.slice(0, 70),
-          source: "Lux3D API",
-          sourceUrl: output.content,
-          taskId: lease.providerTaskId,
-          prompt: lease.prompt,
-          allowReuse: lease.allowReuse || false,
-          rightsConfirmed: lease.allowReuse || false,
-          generationId: String(lease._id),
-        });
+      } else if (Date.now() - lease.createdAt.getTime() > 2 * 3600000) {
+        lease.state = "timed_out";
+        lease.safeError =
+          "Generation is taking longer than expected. Check the provider account; Buildo will not resubmit.";
+        lease.activeSlot = undefined;
       }
+    } else {
+      lease.state = "transferring";
+      lease.transferAttempts = (lease.transferAttempts || 0) + 1;
+      await setStage("verify_delivery");
+      await verifyModelDelivery(stored);
+    }
+    if (stored) {
+      await setStage("persist_asset");
+      const asset = await Asset.findOneAndUpdate(
+        { generationId: String(lease._id) },
+        {
+          $setOnInsert: {
+            ...stored,
+            ownerId: user.id,
+            name: lease.prompt.slice(0, 70),
+            source: "Lux3D API",
+            sourceUrl:
+              "https://api.aholo.ai/global/lux3d/v1/generate/task/get?taskid=" +
+              encodeURIComponent(lease.providerTaskId!),
+            taskId: lease.providerTaskId,
+            prompt: lease.prompt,
+            allowReuse: lease.allowReuse || false,
+            rightsConfirmed: lease.allowReuse || false,
+            generationId: String(lease._id),
+          },
+        },
+        { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
+      );
       lease.state = "ready";
       lease.assetId = String(asset._id);
       lease.safeError = undefined;
+      lease.failure = undefined;
+      lease.recoveryFailures = 0;
       lease.activeSlot = undefined;
-    } else if (Date.now() - lease.createdAt.getTime() > 2 * 3600000) {
-      lease.state = "timed_out";
-      lease.safeError =
-        "Generation is taking longer than expected. Check the provider account; Buildo will not resubmit.";
+      lease.transferCheckpoint = undefined;
+    }
+    await persist();
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "LEASE_LOST"
+    )
+      return generationView((await Job.findById(lease._id))!.toObject());
+    const detail = generationFailure(error, stage);
+    const reference = crypto.randomUUID();
+    const failure = {
+      code: detail.code,
+      stage,
+      retryable: detail.retryable,
+      at: new Date(),
+      reference,
+    };
+    lease.failure = failure;
+    lease.failureHistory = [...(lease.failureHistory || []).slice(-9), failure];
+    if (lease.state === "transferring" || lease.state === "transfer_failed")
+      lease.state = "transfer_failed";
+    lease.safeError = detail.message;
+    lease.recoveryFailures = (lease.recoveryFailures || 0) + 1;
+    const retries = lease.recoveryFailures;
+    if (!detail.retryable || retries >= 8) {
+      lease.failure.retryable = false;
+      lease.safeError = detail.message.replace(
+        "Delivery will retry",
+        "Automatic delivery retries have paused. Use Retry delivery after checking the issue",
+      );
       lease.activeSlot = undefined;
     }
-  } catch (error) {
-    console.error("Generation reconciliation paused", {
+    lease.nextPollAt = new Date(
+      Date.now() + Math.min(15 * 60000, 30000 * 2 ** Math.min(retries - 1, 5)),
+    );
+    console.error("Generation recovery paused", {
       jobId: String(lease._id),
-      stage: lease.state,
-      type: error instanceof Error ? error.name : "StorageError",
-      code:
-        typeof error === "object" && error && "code" in error
-          ? String(error.code).slice(0, 80)
-          : undefined,
+      ...failure,
     });
-    lease.state =
-      lease.state === "transferring" ? "transfer_failed" : lease.state;
-    lease.safeError =
-      "Status or asset transfer could not be completed. Refresh to retry delivery; no new generation will be submitted.";
-    lease.nextPollAt = new Date(Date.now() + 60000);
+    await persist();
   } finally {
-    lease.leaseUntil = undefined;
-    await lease.save();
+    await Job.updateOne(
+      { _id: lease._id, leaseToken: token },
+      { $unset: { leaseUntil: 1, leaseToken: 1 } },
+    );
   }
-  return view(lease.toObject());
+  return generationView((await Job.findById(lease._id))!.toObject());
+}
+
+export async function retryGenerationTransfer(
+  jobId: string,
+  user: { id: string },
+) {
+  await rate(`delivery-retry:${user.id}`, 6, 60);
+  const updated = await Job.findOneAndUpdate(
+    {
+      _id: id(jobId),
+      ownerId: user.id,
+      state: { $in: ["transfer_failed", "generating"] },
+      providerTaskId: { $exists: true },
+      $or: [
+        { leaseUntil: { $exists: false } },
+        { leaseUntil: { $lt: new Date() } },
+      ],
+    },
+    {
+      $set: {
+        transferAttempts: 0,
+        recoveryFailures: 0,
+        nextPollAt: new Date(),
+      },
+      $unset: { failure: 1, safeError: 1 },
+    },
+    { returnDocument: "after" },
+  );
+  if (!updated)
+    fail(
+      409,
+      "DELIVERY_BUSY",
+      "This delivery is not available for retry yet. Refresh its status.",
+    );
+  return generationItem(jobId, user);
+}
+
+export async function reconcileDueGenerations(limit = 10) {
+  const now = new Date();
+  const due = await Job.find({
+    state: { $in: ["queued", "generating", "transferring", "transfer_failed"] },
+    "failure.retryable": { $ne: false },
+    $and: [
+      {
+        $or: [
+          { nextPollAt: { $exists: false } },
+          { nextPollAt: { $lte: now } },
+        ],
+      },
+      {
+        $or: [
+          { leaseUntil: { $exists: false } },
+          { leaseUntil: { $lte: now } },
+        ],
+      },
+    ],
+  })
+    .sort({ nextPollAt: 1, createdAt: 1 })
+    .limit(Math.max(1, Math.min(20, limit)))
+    .select("ownerId")
+    .lean();
+  const results = [];
+  for (const item of due) {
+    const result = await generationItem(String(item._id), { id: item.ownerId });
+    results.push({ id: result.id, state: result.state });
+  }
+  return results;
 }

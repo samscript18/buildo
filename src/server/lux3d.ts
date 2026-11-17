@@ -17,7 +17,7 @@ async function call(path: string, body?: unknown) {
   if (!response.ok)
     fail(
       502,
-      "PROVIDER",
+      `HTTP_${response.status}`,
       "The generation provider could not complete the request.",
     );
   const json = await response.json();

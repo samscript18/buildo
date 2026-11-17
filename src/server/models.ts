@@ -63,10 +63,18 @@ const jobSchema = new Schema(
     nextPollAt: Date,
     assetId: String,
     activeSlot: String,
+    stage: String,
+    transferAttempts: { type: Number, default: 0 },
+    recoveryFailures: { type: Number, default: 0 },
+    failure: Schema.Types.Mixed,
+    failureHistory: [Schema.Types.Mixed],
+    transferCheckpoint: Schema.Types.Mixed,
+    leaseToken: String,
   },
   options,
 );
 jobSchema.index({ ownerId: 1, requestKey: 1 }, { unique: true });
+jobSchema.index({ state: 1, nextPollAt: 1, leaseUntil: 1 });
 jobSchema.index(
   { ownerId: 1, activeSlot: 1 },
   {
@@ -184,6 +192,21 @@ export interface JobRecord extends Base {
   nextPollAt?: Date;
   assetId?: string;
   activeSlot?: string;
+  stage?: import("./generation-failures").TransferStage;
+  transferAttempts: number;
+  recoveryFailures: number;
+  failure?: {
+    code: string;
+    stage: string;
+    retryable: boolean;
+    at: Date;
+    reference: string;
+  };
+  failureHistory?: JobRecord["failure"][];
+  transferCheckpoint?: Awaited<
+    ReturnType<typeof import("./storage").uploadModel>
+  >;
+  leaseToken?: string;
 }
 export interface PublicationRecord extends Base {
   ownerId: string;
