@@ -44,3 +44,11 @@ The original public-full-view contract is superseded by this user-requested acce
 - Signed-in members: full paginated lists, immutable published scenes with renderable referenced assets, allowed remix, full active-challenge brief/template/entries. Voting/submission permissions and windows are unchanged. An account never grants access to someone else’s private drafts.
 - Creator previews list at most three safe publication summaries for guests; signed-in creator profiles show up to 24 recent publications.
 - Auth entry links use `next` with a safe internal-path allowlist. Email signup/signin and Google OAuth return to the chosen space/challenge. External/protocol-relative or unrecognized destinations fall back to `/dashboard`. Confirmation passwords remain client-only.
+
+## Recovery and permission additions (November 17)
+
+- `POST /api/assets/:id/allow-remix`: authenticated owner-only, matching Origin, strict `{rightsConfirmed:true}`; ready asset required; enables `allowReuse` and returns `{id,allowReuse:true}`. Cross-user requests return 404. Permission is additive; existing publications/remixes are not invalidated. Rate limit 20/minute per account.
+- `POST /api/generations/:id/retry-transfer`: authenticated owner-only, matching Origin, no request body; confirmed provider task required, recoverable state and no active lease. Resets delivery recovery limits, then reconciles that same task. Rate limit 6/minute. Never creates a paid task. Unavailable/busy returns 409.
+- Generation responses include safe `stage`, `failure` (code/stage/retryable/time/reference), bounded `failureHistory`, `nextPollAt` and retry counters when present. They omit upload checkpoints, lease tokens/expiry, request hash and active-slot bookkeeping. No signed provider output URLs. Dashboard uses its existing explicit safe field projection.
+- `GET /api/health`: unauthenticated database/index readiness; 200 `{status:"ok"}` or safe 503 `{status:"unavailable"}`. No secrets or database details.
+- Scheduled `npm run jobs:reconcile` is a server CLI, not a public API. At most ten due jobs per run; five-minute leases; exponential recovery backoff capped at fifteen minutes; eight failures or permanent errors pause automatic recovery.

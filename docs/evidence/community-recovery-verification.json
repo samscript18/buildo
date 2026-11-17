@@ -1,0 +1,114 @@
+{
+  "journey": {
+    "publicationId": "6afc17f98b135f75f69033ac",
+    "cover": "https://res.cloudinary.com/dynopc0cn/image/upload/v1794906103/buildo/covers/6afc17ce8b135f75f69033a7/570550bd-b796-448d-a7be-75390484fa5f.png",
+    "coverSha256": "47f6ee25958818037e877f01912275a4acc311ac8825fc2ad183c09b6d3c0e46",
+    "coverHttpStatus": 200,
+    "browserRecovery": true,
+    "unattendedRecovery": true,
+    "remix": true,
+    "challengeWindows": true,
+    "votingAndWithdrawal": true,
+    "finalTotals": true,
+    "allAccountsAndVotesIsolated": true
+  },
+  "sourceProjectId": "6af77e405fc6d2fc20c801d2",
+  "sourceRevision": 39,
+  "sourceScene": {
+    "schemaVersion": 1,
+    "environment": "procedural",
+    "room": {
+      "width": 6,
+      "depth": 6,
+      "height": 3,
+      "floor": "#d9c3a6",
+      "wall": "#f0ebe1",
+      "wallpaper": "linen",
+      "wallpaperWall": "back",
+      "wallpaperColor": "#8b9a7a"
+    },
+    "lighting": "evening",
+    "camera": {
+      "position": [7, 6, 7],
+      "target": [0, 0, 0]
+    },
+    "objects": [
+      {
+        "instanceId": "808662f7-c6ec-45b8-834a-e28e20c87cb6",
+        "assetId": "6af782945fc6d2fc20c801d4",
+        "position": [
+          -0.703892507132763, 0.09157322083929066, -1.7440668972654731
+        ],
+        "rotation": [
+          0.11500505683185999, 0.03223503175261789, -0.0406497287714968
+        ],
+        "scale": [1, 1.0812192974232384, 1]
+      },
+      {
+        "instanceId": "f2401471-9d39-497d-959a-07e6409f04c8",
+        "assetId": "6af78a6c5fc6d2fc20c801d5",
+        "position": [1.0999401074295503, 0, -1.7861069407500727],
+        "rotation": [0, 0, 0],
+        "scale": [2.1, 2.1, 2.1]
+      },
+      {
+        "instanceId": "07e54480-fa26-46f3-9d6b-3a3fe798a1cc",
+        "assetId": "6af78eae5fc6d2fc20c801d6",
+        "position": [0.4061516080879546, 0, 1.6183333489852618],
+        "rotation": [
+          -3.141592653589793, 0.009852241459937473, -3.141592653589793
+        ],
+        "scale": [3.9220688933802976, 2.576557490363321, 1]
+      }
+    ]
+  },
+  "assets": [
+    {
+      "id": "6af782945fc6d2fc20c801d4",
+      "taskId": "7232531",
+      "bytes": 6789860,
+      "sha256": "fc6045b31b9ee165000f13ae086db22cf7c1241b5532cee45a4c5e5308bdd9af",
+      "bounds": {
+        "min": [-0.25, -0.23301132023334503, -0.18764230608940125],
+        "max": [0.25, 0.23301132023334503, 0.18764230608940125]
+      },
+      "normalization": {
+        "scale": 2,
+        "offset": [0, 0.23301132023334503, 0]
+      }
+    },
+    {
+      "id": "6af78a6c5fc6d2fc20c801d5",
+      "taskId": "7242134",
+      "bytes": 7900320,
+      "sha256": "f6343af2a7a1ce7d65569334ab23de0afaf8f7fc2fdfff7c486738fc86084fc2",
+      "bounds": {
+        "min": [-1.0499999523162842, -0.6970292329788208, -0.909996747970581],
+        "max": [1.0499999523162842, 0.6970292329788208, 0.909996747970581]
+      },
+      "normalization": {
+        "scale": 0.47619049781574513,
+        "offset": [0, 0.6970292329788208, 0]
+      }
+    },
+    {
+      "id": "6af78eae5fc6d2fc20c801d6",
+      "taskId": "7248285",
+      "bytes": 6274632,
+      "sha256": "9fbc7960ff2d6202554e7a478722228b79dc7b33aacc4d2509395488f72a6e50",
+      "bounds": {
+        "min": [-0.800000011920929, -0.6170018911361694, -0.18622060120105743],
+        "max": [0.800000011920929, 0.6170018911361694, 0.18622060120105743]
+      },
+      "normalization": {
+        "scale": 0.6249999906867744,
+        "offset": [0, 0.6170018911361694, 0]
+      }
+    }
+  ],
+  "restoredExactly": true,
+  "productionWrites": false,
+  "privateDisposableScene": true,
+  "pageErrors": [],
+  "checkedAt": "2026-11-17T09:02:02.292Z"
+}

@@ -1,29 +1,19 @@
-# Blockers
+# Current blockers and remaining verification
 
-Studio/bedroom follow-up: both newly authorized Lux3D jobs completed and are ready in Cloudinary—bed task 7242134 and TV task 7248285. The complete original saved bedroom (revision 39) with all three genuine models and wallpaper passed read-only browser-copy rendering/restoration. Actual toolbar drags, saves, undo/redo, snapping and reset camera passed; settings profile/password/session actions passed. Evidence and retained screenshots: STUDIO_BEDROOM_EVIDENCE.md and docs/evidence/. No generation/credential blocker remains for those requested objects. Production deployment, real challenge participation, SpatialGen, ordinary-hardware performance and email recovery remain separate outstanding work.
+Updated November 17, 2026. Earlier credential/transfer blockers have been resolved for the three authorized bedroom models. No required environment variable is currently missing locally for Lux3D, MongoDB, Cloudinary or configured Google sign-in. Keep all secrets in ignored `.env.local` or the deployment secret manager.
 
-Initial inspection: no .env.local and no user-supplied Lux3D asset.
+- **Render deployment:** no service/domain or public HTTPS result yet. `render.yaml` and [RENDER_SETUP.md](RENDER_SETUP.md) provide the Node web service, minute-based recovery job, database access, environment and OAuth setup. Need the actual Render service origins/outbound ranges and a deployment run. No Render credentials are needed merely to prepare this setup; no deployment is claimed.
+- **Independent human participation:** the real remixable bedroom and open challenge now exist. No account allowlist is used. Another person can sign in, explore/remix and submit during the open window; votes are accepted only in the later voting window. Technical two-account browser checks passed in a disposable database, including real Cloudinary models/covers. Those test accounts/votes are not production engagement. No production test votes or fabricated winners were created.
+- **Google callback:** the user reports regular Chrome sign-in. Automated Chrome was rejected by Google. Do not bypass that check or extract regular-browser sessions. Validate the exact HTTPS redirect and cookies after deployment in regular Chrome.
+- **SpatialGen/Viewer:** no actual compatible output or composition evidence. Environment generation remains unavailable; rooms are honestly procedural editable geometry.
+- **Performance/device coverage:** actual three-model browser rendering and restoration pass. Ordinary-laptop frame-time/memory measurements, broad touch/device coverage and explicit context-loss checks remain unverified. Software WebGL screenshots are not hardware benchmarks.
+- **Submission handoff:** public demo URL, actual running-project footage and final PDF/PPT report still need completion. Retained actual screenshots and an outline exist. No external X post has been made.
+- **Email account recovery:** email delivery is not configured; password recovery, Google-only password setup and email changes remain unavailable. Existing credential password changes and session revocation are tested.
 
-Update 2026-11-13: local credentials are configured and passed preflight. The user submitted the one authorized generation in regular Chrome; task `7232531` completed and its genuine GLB is now stored in Cloudinary as ready asset `6af782945fc6d2fc20c801d4`. Delivered bytes match the source SHA-256. The actual GLB host `qhsmodel.kujiale.com` is configured locally in `LUX3D_DOWNLOAD_HOSTS`. No credential variable is currently missing for this path. Genuine Cloudinary browser delivery, textures, orientation, numeric transforms and exact MongoDB save/reload passed in a disposable test room. The user's original bedroom still needs the object placed and saved manually; it was not modified by that harness.
+## Transfer limitations
 
-The real-account browser check paused before creating a project or submitting a generation: Google rejected the automated Chrome browser as unsupported. Use the normal Chrome/Safari application at `http://localhost:3000/login` for manual Google consent and callback verification. Do not bypass Google's browser checks or transfer browser sessions. The user has authorized one bedside-table generation only; no automatic resubmission is permitted.
+The original generic failure did not retain enough diagnostics to prove its exact historical cause. Confirmed earlier issues were nullable provider outputs while still generating and the missing observed GLB host in the download allowlist. Both were fixed. Increasing upload timeouts was a mitigation, not proof that a timeout caused the historical failure.
 
-- MongoDB: MONGODB_URI configured; connectivity verified. Real-account scene persistence still needs live verification.
-- Authentication: BETTER_AUTH_SECRET and BETTER_AUTH_URL configured; real Google callback requires the normal-browser check above.
-- Cloudinary: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET configured; actual 6,789,860-byte raw GLB upload and delivered hash verified.
-- Lux3D: LUX3D_API_KEY configured; task `7232531` completed. Do not resubmit it.
-- LUX3D_DOWNLOAD_HOSTS: exact observed GLB hostname configured; continue validating future output hosts rather than guessing or allowing arbitrary downloads.
-- SpatialGen: no actual output or compatibility evidence; environment generation stays unavailable.
-- No deployment target/domain or running-project footage. Final submission report must wait for actual screenshots and verified workflow.
+New recovery persists the stage, safe error code, support reference, bounded history, next retry time, lease token and uploaded-model checkpoint. Automatic retries never create another paid generation. Nonretryable failures or eight recovery failures pause for owner/operator attention. A five-minute lease prevents concurrent finalizers and recovers after process termination. Cloudinary upload followed by a process crash before checkpoint persistence can still leave an orphan; deterministic IDs and explicit reference audits protect cleanup. Expired provider output URLs may still require provider/operator help; do not automatically buy a replacement generation.
 
-Set secrets only in ignored .env.local. Never send them in chat. Continue independent implementation while these are unavailable.
-
-## Current independent work
-
-The fullstack code path, editor/community/challenge UI, isolated database tests, production build and isolated browser journey are implemented. See REQUIREMENTS_MATRIX.md and VERIFICATION.md. This does not remove the live blockers above. No real challenge, user activity, votes, provider generation, storage upload or deployment has been fabricated.
-
-After an authenticated generation returns, the private generation job records `outputHost`. Review that exact provider storage hostname before adding it to `LUX3D_DOWNLOAD_HOSTS`, then refresh the transfer. Never add an arbitrary user-supplied host. Unknown paid creation requires operator reconciliation with the provider account; no automatic paid resubmission exists.
-
-Google OAuth is implemented but real consent/callback verification requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, a configured Google consent screen and an exact authorized redirect URI: `<BETTER_AUTH_URL>/api/auth/callback/google`. Configure secrets locally and restart. The isolated test uses explicit dummy credentials solely to verify authorization URL and state construction, never a real Google identity or token exchange.
-
-The original public full-view flow is intentionally superseded by the user-requested preview/member split: interactive room viewing and complete challenge details/entries now require an account. Public share URLs expose a limited preview before authentication. This is an implemented product-policy change, not a provider blocker.
+No missing-secret blocker remains for the completed bedroom. Future output hosts must be reviewed before changing `LUX3D_DOWNLOAD_HOSTS`; never allow arbitrary user-supplied download domains.

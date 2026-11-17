@@ -40,3 +40,9 @@ The moon/sun button in the public header or next to the workspace logo switches 
 ## Public preview → member exploration
 
 Open `/explore` or `/challenges` in a signed-out browser to see the capped preview and sign-in invitation. A shared design URL shows a cover/short summary; its room viewer is not loaded. A challenge URL shows its title/theme/dates, with full rules and entries behind sign-in. Follow the sign-in link (or create an account): after authentication the same URL opens with the workspace sidebar and full content. Verify by requesting the guest API directly: there must be no scene/model delivery data, and challenge entries must return 401. Test fixtures can check this boundary but do not prove live provider delivery.
+
+## Current real demo entry points (November 17)
+
+Run `npm run dev` with the configured ignored `.env.local`. In regular Chrome, open `/designs/6afc147ad89aa309674af845` for the real authorized bedroom publication and `/challenges/6afc1474d89aa309674af843` for Small Space, Big Ideas. Sign in to view the complete room, use Remix, and participate. Any registered account can join; no allowlist is needed. The owner cannot vote for their own entry. Submissions end Nov 18 at 18:00 Lagos, then voting runs until Nov 19 at 10:00 Lagos. Use Start from this room for a pinned challenge project; a general remix is not automatically a challenge entry.
+
+In Assets, owners can explicitly confirm rights and enable remix reuse for a private model. In Studio, a paused delivery exposes Retry delivery; this resumes the existing model and never submits a new paid generation. After deployment, the configured cron also recovers due jobs without an open studio tab. Evidence and test/public distinctions: COMMUNITY_RECOVERY_EVIDENCE.md. Deployment instructions: RENDER_SETUP.md.

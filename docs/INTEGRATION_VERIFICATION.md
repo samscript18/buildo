@@ -74,3 +74,7 @@ GLB validation checks magic/version/length, embedded resources, accessors, mesh/
 7. Capture actual screenshots, preview and publish a snapshot; another real account explores and remixes with asset permission. Enter the actual admin-configured challenge and vote within its windows.
 8. Add real furnished-room hardware/browser/object/triangle/texture observations. Validate context-loss recovery and unavailable-asset behavior.
 9. Replace blocked statuses only after these results exist. SpatialGen/Viewer remains separate until actual 3DGS composition, camera and restoration checks succeed.
+
+## November 17: checkpoint recovery, live covers and real open community
+
+See [COMMUNITY_RECOVERY_EVIDENCE.md](COMMUNITY_RECOVERY_EVIDENCE.md) for exact commands and retained evidence. Genuine Cloudinary model checkpoint recovery passed through both browser Retry delivery and the real scheduled CLI with the studio closed. No paid generation was created. Actual viewport-cover upload, delivered PNG bytes/hash, immutable snapshot, second-account remix and challenge/vote/window/results checks passed with isolated accounts and votes. The owner separately authorized and completed the real remixable bedroom publication and first owner entry in an open challenge. No test production votes or independent human participation are claimed. Render setup is prepared but undeployed.

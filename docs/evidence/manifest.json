@@ -1,11 +1,11 @@
 {
-  "description": "Actual application evidence: genuine Lux3D/Cloudinary models in isolated TEST ONLY scenes. Complete bedroom is a read-only copy of original revision 39. No mockups, signed URLs or credentials.",
+  "description": "Actual Buildo application evidence. Genuine Lux3D models and Cloudinary covers. Isolated tests explicitly distinguished from authorized real publication/challenge; no production test votes.",
   "files": [
     {
       "file": "README.md",
       "source": "Repository evidence index",
-      "bytes": 1756,
-      "sha256": "6620ea1b18982e2f752081f091b3f174afcdf8463170c0aa3db892cc337aa024"
+      "bytes": 2777,
+      "sha256": "ce44875f016c64c80da537e675b2f42247c15e56f6cdb442d6c979544fb516b3"
     },
     {
       "file": "bed-controls-move.png",
@@ -60,6 +60,36 @@
       "source": "artifacts/bedroom-scene/6af77e405fc6d2fc20c801d2/verification.json",
       "bytes": 3082,
       "sha256": "990c915c9b4e921d78b01eb385eadcf99c90d0d702c56e0b9724efc08a4f9f48"
+    },
+    {
+      "file": "community-actual-bedroom-cover.png",
+      "source": "November 17 actual application verification; see evidence README",
+      "bytes": 151752,
+      "sha256": "47f6ee25958818037e877f01912275a4acc311ac8825fc2ad183c09b6d3c0e46"
+    },
+    {
+      "file": "community-isolated-remix.png",
+      "source": "November 17 actual application verification; see evidence README",
+      "bytes": 394817,
+      "sha256": "0ab1e32918d00d82efa7eeba144bb4ac3b632ea7a2bbc916d896496148218555"
+    },
+    {
+      "file": "community-isolated-results.png",
+      "source": "November 17 actual application verification; see evidence README",
+      "bytes": 129990,
+      "sha256": "9b82afc96383bff27413c67905290a9e7ff41fb96e228eaa817351d459660a98"
+    },
+    {
+      "file": "community-recovery-verification.json",
+      "source": "November 17 actual application verification; see evidence README",
+      "bytes": 3632,
+      "sha256": "01567a23e3bb48c5829944022ceac36bbbcc01c42fc894733e0861c68eae252b"
+    },
+    {
+      "file": "real-community-setup.json",
+      "source": "November 17 actual application verification; see evidence README",
+      "bytes": 785,
+      "sha256": "f5af0f24d55dca9d51473b2aea97b81a1cd1dd1530be43761faa49f13b63b608"
     },
     {
       "file": "settings-overview.png",

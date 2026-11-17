@@ -1,3 +1,5 @@
+Current follow-up: transfer checkpoint recovery and an unattended recovery CLI are verified with genuine Cloudinary models. The authorized bedroom is published/remixable and Small Space, Big Ideas is open to all signed-in accounts. [Evidence](docs/COMMUNITY_RECOVERY_EVIDENCE.md) · [Exact Render setup](docs/RENDER_SETUP.md). Render deployment and independent human participation remain pending.
+
 # Buildo
 
 Studio controls, wallpaper, the two authorized bedroom generations and the GrantPath settings reference are tracked in [docs/STUDIO_BEDROOM_EVIDENCE.md](docs/STUDIO_BEDROOM_EVIDENCE.md). Settings now has overview, profile, appearance, password/sessions and privacy pages. Studio wallpaper choices are under the room properties. Select an object before dragging Move/Rotate/Resize handles; Snap affects gizmo dragging, and Undo/Redo track scene changes.
@@ -87,7 +89,7 @@ Next.js route handlers are the only backend; no Express/Nest service. Domain dat
 - Jobs reconcile through bounded status requests. The studio polls while open; dashboard has refresh actions. No always-running worker is assumed. Uncertain paid creation is held for operator review and never automatically resubmitted.
 - Scene budgets are validation defaults, not measured performance claims: 80 instances, 1.5 million total vertices, 100MB unique source bytes, 48 megapixels unique textures; each file ≤25MB, textures ≤4096px and 24 megapixels total. Real laptop furnished-room performance is unmeasured.
 - Public walkthrough provides free movement without collision detection, with orbit/pinch as the touch alternative. Standard PBR tinting does not retexture arbitrary models.
-- Capture renders one frame without keeping `preserveDrawingBuffer` enabled. Cloudinary cover upload remains live-unverified.
+- Capture renders one frame without keeping `preserveDrawingBuffer` enabled. Actual Cloudinary viewport-cover upload and delivered PNG are verified; see docs/COMMUNITY_RECOVERY_EVIDENCE.md.
 - Email verification and password recovery delivery are not configured. No collaboration, payments, subscriptions, marketplace, invented winners, SpatialGen/Viewer compatibility claim, deployed URL or final submission report.
 - See the [requirements matrix](docs/REQUIREMENTS_MATRIX.md), [blockers](docs/BLOCKERS.md), [integration evidence](docs/INTEGRATION_VERIFICATION.md), and [deployment instructions](docs/DEPLOYMENT.md) for current verification status and remaining work.
 
