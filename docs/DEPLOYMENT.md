@@ -1,10 +1,10 @@
 # Deployment
 
-No deployment has been performed. There is no verified public demo URL.
+No deployment has been performed. There is no verified public demo URL. The prepared Render web-service/cron Blueprint and exact dashboard steps are in [RENDER_SETUP.md](RENDER_SETUP.md).
 
 ## Runtime and providers
 
-Deploy this one Next.js repository to a Node.js host with HTTPS, outbound TLS and request durations of at least 120 seconds for model finalization. MongoDB requires read/write/index privileges and a bounded connection pool. Atlas or a managed replica set is recommended operationally; the current Better Auth adapter also supports standalone MongoDB without transactions. Domain invariants use atomic compare-and-set updates and unique indexes rather than requiring multi-document transactions.
+Deploy this one Next.js repository to a Node.js host with HTTPS, outbound TLS and request durations of at least 180 seconds for model finalization. MongoDB requires read/write/index privileges and a bounded connection pool. Atlas or a managed replica set is recommended operationally; the current Better Auth adapter also supports standalone MongoDB without transactions. Domain invariants use atomic compare-and-set updates and unique indexes rather than requiring multi-document transactions.
 
 Set the exact names in `.env.example` in the host’s secret manager. Never prefix secrets with NEXT_PUBLIC_. `BETTER_AUTH_URL` must match the externally visible HTTPS origin; session-authenticated domain writes validate Origin. Register the intended admin normally, then run the explicit local admin bootstrap against the intended database. Build and execute indexes before opening traffic.
 
@@ -21,9 +21,9 @@ The local CLI reads `.env.local`; hosted index provisioning should provide equiv
 
 - Request JSON ≤1MB. Multipart model body ≤25MB +20KB; streamed bytes are bounded even without Content-Length. Configure reverse-proxy upload limits accordingly. Hosts with smaller body caps cannot use this import route without a separate reviewed signed-upload design.
 - No long-running background work after a response. Each status request reconciles at most one job under a persisted lease. Studio polls every 15 seconds. Dashboard/manual refresh resumes persisted jobs after navigation or restart.
-- API route duration is declared 120 seconds; verify host support. Provider queries time out after 20 seconds; each HTTPS model delivery after 30 seconds; model Cloudinary upload after 20 seconds. A finalization lease is 180 seconds. A host terminating a request leaves recoverable persisted state; wait for lease expiration before retry.
+- API route duration is declared 180 seconds; verify host support. Provider queries time out after 20 seconds; each HTTPS model delivery after 30 seconds; model Cloudinary upload after 60 seconds. A finalization lease is 300 seconds. A host terminating a request leaves recoverable persisted state; wait for lease expiration before retry.
 - Unknown paid creation is deliberately held. An operator must inspect the provider account and reconcile the actual task ID or confirm no creation before allowing a new paid attempt. Do not blindly reset unknown jobs. No automatic prompt-based task matching is implemented.
-- Result URLs have limited lifetime. For unattended production usage, add an authenticated scheduled reconciler that invokes the same bounded reconciliation service; no scheduler is installed or claimed. Revisit expired output handling before leaving jobs unattended.
+- Result URLs have limited lifetime. For unattended usage, the prepared Render cron service invokes `npm run jobs:reconcile` using shared server environment variables. The real CLI has an isolated live-storage verification path; Render execution remains unverified. Revisit expired output handling before leaving jobs unattended.
 - `LUX3D_DOWNLOAD_HOSTS` is an exact operator-managed list. HTTPS download pins validated public IPv4 DNS addresses into the TLS request and rejects redirects, custom ports, credentials and private IPs. Do not add arbitrary user domains. Storage CNAMEs/IPv6-only delivery have not been validated.
 - Cloudinary models are raw assets, with explicit public ID/resource type/secure URL. No image transformations on GLBs. Delivered bytes are hashed before ready status. Verify raw delivery account settings, CORS and browser loading with actual output; uploads alone do not prove browser compatibility.
 - Never automatically delete uploaded assets. Publications/remixes retain references; private project deletion is soft. Upload failures after remote success can leave unreferenced storage objects. Audit hashes, task IDs and all references before any manual cleanup.

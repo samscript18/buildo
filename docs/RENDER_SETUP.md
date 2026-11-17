@@ -1,0 +1,93 @@
+# Deploy Buildo to Render
+
+Prepared November 17, 2026. No Render deployment or public HTTPS check has been performed. The committed Blueprint provisions a Node web service and a scheduled recovery job; review Render's displayed charges before creating them. MongoDB and Cloudinary remain external providers.
+
+## 1. Connect the repository
+
+Push the verified commits to GitHub. In Render, choose **New → Blueprint**, connect `samscript18/buildo`, select `main`, and use root `render.yaml`. Review both services: `buildo` and `buildo-generation-recovery`. This application requires a Node **Web Service** because it uses authentication and server APIs.
+
+The Blueprint uses `1c-2g` instances and disables automatic deployment. Deploy both services after future releases so their recovery code stays in sync. `.node-version` pins the locally tested Node version, 26.4.0. Render provisioning of that version remains a deployment check.
+
+## 2. Configure environment variables
+
+Enter secrets directly into Render's Environment settings from your ignored `.env.local`. Keep your existing `BETTER_AUTH_SECRET` when using the existing database. Do not commit or paste secret values into reports.
+
+| Web service variable    | Value/source                                                               |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `MONGODB_URI`           | Existing MongoDB database connection string                                |
+| `BETTER_AUTH_SECRET`    | Existing local secret, or `openssl rand -base64 32` for a new installation |
+| `BETTER_AUTH_URL`       | Actual final HTTPS Render/custom-domain origin, no path                    |
+| `SITE_URL`              | Same final HTTPS origin, used during build and runtime                     |
+| `CLOUDINARY_CLOUD_NAME` | Existing Cloudinary account                                                |
+| `CLOUDINARY_API_KEY`    | Existing server API key                                                    |
+| `CLOUDINARY_API_SECRET` | Existing server API secret                                                 |
+| `LUX3D_API_KEY`         | Existing Aholo credential                                                  |
+| `LUX3D_DOWNLOAD_HOSTS`  | `qhsmodel.kujiale.com`, the observed genuine GLB host                      |
+| `GOOGLE_CLIENT_ID`      | Add manually if enabling Google sign-in                                    |
+| `GOOGLE_CLIENT_SECRET`  | Add manually if enabling Google sign-in                                    |
+
+The Blueprint references the web service's MongoDB, Cloudinary and Lux3D variables from the recovery job; it needs no authentication secret. Google variables are optional and omitted from the Blueprint prompts. Render supplies `PORT`; do not hardcode a local port.
+
+Use the hostname Render actually assigns, not an assumed `buildo.onrender.com`. If it is assigned after initial creation, update both URL variables and deploy again before testing authentication or SEO. Change these values again when switching to a custom domain.
+
+## 3. Allow database connections
+
+For **each service**, open **Connect → Outbound** in Render and copy its outbound CIDR ranges. Add them under MongoDB Atlas **Network Access → IP Access List**. The MongoDB user must have read/write and index creation permission on the application database. Use the same database for the web service and worker. Atlas connectivity and index creation must succeed before opening traffic.
+
+## 4. Check web-service commands
+
+| Setting      | Exact value                             |
+| ------------ | --------------------------------------- |
+| Build        | `npm ci --include=dev && npm run build` |
+| Pre-deploy   | `npm run db:indexes:hosted`             |
+| Start        | `npm run start:render`                  |
+| Health check | `/api/health`                           |
+
+The start script binds `0.0.0.0` and honors Render's `PORT`. Dev dependencies are installed intentionally: the index and worker commands use `tsx`. The health endpoint returns 200 after database/index initialization, or a safe 503 without connection details. Models and covers live in Cloudinary; projects and recovery checkpoints live in MongoDB. No persistent disk is required.
+
+## 5. Configure Google
+
+In Google Cloud Console, open the OAuth **Web application** client. Add your exact HTTPS origin as an authorized JavaScript origin and add:
+
+```text
+https://YOUR-ACTUAL-HOST/api/auth/callback/google
+```
+
+as an authorized redirect URI. Keep localhost entries if you still develop locally. Configure consent-screen publishing/test-user access as appropriate for your Google project. Save Render's two Google secrets and redeploy. Test in regular Chrome, where Google permits interactive authentication.
+
+## 6. Check scheduled recovery
+
+The recovery service uses schedule `* * * * *` (every minute, UTC), build `npm ci --include=dev`, and start `npm run jobs:reconcile`. Each run processes at most ten due jobs serially, respects backoff and persisted leases, and exits. It can query an existing confirmed provider task and finish its delivery; it cannot submit a generation.
+
+A persisted Cloudinary checkpoint skips re-downloading/re-uploading and verifies the stored model. Transient errors use exponential backoff, capped at 15 minutes; eight failures pause automatic recovery. The owner can use **Retry delivery** after fixing the cause. Configuration/format errors pause immediately. Uncertain paid submissions remain operator-reviewed and are never automatically recreated.
+
+Render permits one active run per cron job and delays a scheduled run while one is active. **Trigger Run** cancels an active run, so use it only when no run is active. Check Runs logs for safe job IDs/states. A killed process leaves a five-minute lease and retained checkpoint for the next eligible run.
+
+## 7. Verify the deployed app
+
+1. Open `https://YOUR-ACTUAL-HOST/api/health`; expect HTTP 200 and `status: "ok"`.
+2. Register/sign in and test Google in regular Chrome. Verify HTTPS session cookies and owner-only project access.
+3. Open the existing bedroom. Check all three genuine models, move/save/reopen, preview and wallpaper. Confirm Cloudinary requests succeed in the browser with correct textures.
+4. Publish with a captured cover, open the share link as a guest and then as another signed-in account, and remix. Confirm attribution and that private edits leave the published snapshot unchanged.
+5. Open the configured challenge. Any signed-in account can start and submit during its submission window. Voting opens afterward; self-votes are rejected. Do not change real event windows merely to test results; automated isolated tests cover those transitions.
+6. For a new **explicitly authorized** generation, close the studio after submission and confirm the scheduled worker completes the existing job. Do not generate again just to retry delivery. Existing-model/checkpoint checks require no new generation credits.
+7. Check `/robots.txt`, `/sitemap.xml`, `/opengraph-image`, canonical URLs and private noindex pages using the actual origin.
+8. Record the public URL, observed worker runs and actual browser results in `docs/DEPLOYMENT.md`. Until then deployment remains unverified.
+
+## Local commands
+
+```bash
+npm ci
+cp .env.example .env.local
+# Populate .env.local locally; never overwrite an already configured file.
+npm run db:indexes
+npm run dev
+```
+
+For an existing checkout with configured secrets, skip the copy step. To run one recovery pass locally:
+
+```bash
+node --env-file=.env.local --conditions=react-server --import tsx scripts/reconcile-generations.ts
+```
+
+Official references checked: [Next.js on Render](https://render.com/docs/deploy-nextjs-app), [Blueprint specification](https://render.com/docs/blueprint-spec), [cron jobs](https://render.com/docs/cronjobs), [outbound IP ranges](https://render.com/docs/outbound-ip-addresses), [Node version selection](https://render.com/docs/node-version).
