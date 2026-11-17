@@ -1,12 +1,12 @@
 # Deploy Buildo to Render
 
-Prepared November 17, 2026. No Render deployment or public HTTPS check has been performed. The committed Blueprint provisions a Node web service and a scheduled recovery job; review Render's displayed charges before creating them. MongoDB and Cloudinary remain external providers.
+Prepared November 17, 2026. No Render deployment or public HTTPS check has been performed. The default `render.yaml` provisions one free Node web service. Optional `render-paid.yaml` provisions a paid web service and scheduled recovery job; review Render's displayed charges before using it. MongoDB and Cloudinary remain external providers.
 
 ## 1. Connect the repository
 
-Push the verified commits to GitHub. In Render, choose **New → Blueprint**, connect `samscript18/buildo`, select `main`, and use root `render.yaml`. Review both services: `buildo` and `buildo-generation-recovery`. This application requires a Node **Web Service** because it uses authentication and server APIs.
+Push the verified commits to GitHub. In Render, choose **New → Blueprint**, connect `samscript18/buildo`, select `main`, and use root `render.yaml`. For your free instance, deploy only `buildo`. If you already created it manually, keep that service and update its commands below; you do not need to create another Blueprint service. This application requires a Node **Web Service** because it uses authentication and server APIs.
 
-The Blueprint uses `1c-2g` instances and disables automatic deployment. Deploy both services after future releases so their recovery code stays in sync. `.node-version` pins the locally tested Node version, 26.4.0. Render provisioning of that version remains a deployment check.
+The default Blueprint uses `plan: free` and disables automatic deployment. The optional paid Blueprint uses `1c-2g` instances; deploy both paid services after future releases so their recovery code stays in sync. `.node-version` pins the locally tested Node version, 26.4.0. Render provisioning of that version remains a deployment check.
 
 ## 2. Configure environment variables
 
@@ -26,7 +26,7 @@ Enter secrets directly into Render's Environment settings from your ignored `.en
 | `GOOGLE_CLIENT_ID`      | Add manually if enabling Google sign-in                                    |
 | `GOOGLE_CLIENT_SECRET`  | Add manually if enabling Google sign-in                                    |
 
-The Blueprint references the web service's MongoDB, Cloudinary and Lux3D variables from the recovery job; it needs no authentication secret. Google variables are optional and omitted from the Blueprint prompts. Render supplies `PORT`; do not hardcode a local port.
+Only the optional paid Blueprint references the web service's MongoDB, Cloudinary and Lux3D variables from a recovery job; that job needs no authentication secret. Google variables are optional and omitted from the Blueprint prompts. Render supplies `PORT`; do not hardcode a local port.
 
 Use the hostname Render actually assigns, not an assumed `buildo.onrender.com`. If it is assigned after initial creation, update both URL variables and deploy again before testing authentication or SEO. Change these values again when switching to a custom domain.
 
@@ -36,12 +36,14 @@ For **each service**, open **Connect → Outbound** in Render and copy its outbo
 
 ## 4. Check web-service commands
 
-| Setting      | Exact value                             |
-| ------------ | --------------------------------------- |
-| Build        | `npm ci --include=dev && npm run build` |
-| Pre-deploy   | `npm run db:indexes:hosted`             |
-| Start        | `npm run start:render`                  |
-| Health check | `/api/health`                           |
+| Setting      | Exact value                                         |
+| ------------ | --------------------------------------------------- |
+| Build        | `npm ci --include=dev && npm run build`             |
+| Pre-deploy   | Leave blank; unavailable on Free                    |
+| Start        | `npm run db:indexes:hosted && npm run start:render` |
+| Health check | `/api/health`                                       |
+
+Free instances cannot use Render's pre-deploy command. Run the idempotent index command as part of **Start Command**, before launching Next.js. `&&` ensures a database/index failure stops startup instead of opening traffic. This command works with the existing scripts; no application-code upgrade is required. Do not put secrets in the command.
 
 The start script binds `0.0.0.0` and honors Render's `PORT`. Dev dependencies are installed intentionally: the index and worker commands use `tsx`. The health endpoint returns 200 after database/index initialization, or a safe 503 without connection details. Models and covers live in Cloudinary; projects and recovery checkpoints live in MongoDB. No persistent disk is required.
 
@@ -55,7 +57,13 @@ https://YOUR-ACTUAL-HOST/api/auth/callback/google
 
 as an authorized redirect URI. Keep localhost entries if you still develop locally. Configure consent-screen publishing/test-user access as appropriate for your Google project. Save Render's two Google secrets and redeploy. Test in regular Chrome, where Google permits interactive authentication.
 
-## 6. Check scheduled recovery
+## 6. Generation recovery on Free and optional paid cron
+
+Render cron jobs do not have a free instance. The default free Blueprint does not create one. Keep the studio open while generating: its status polling reconciles the existing job and transfers the model. After a restart or closing the page, reopen the studio and refresh the job status. There is **no unattended completion guarantee** with only the free web service. Alternatively run the local recovery command below with your configured `.env.local`.
+
+Free web services spin down after 15 minutes without inbound traffic and can take about a minute to wake. Scenes/checkpoints remain in MongoDB and uploaded models remain in Cloudinary, but unfinished provider output URLs may expire before the next recovery attempt. Free memory/CPU capacity for model transfer is deployment-unverified.
+
+For scheduled recovery, use the optional **paid** `render-paid.yaml` or add a paid cron service separately. The following instructions apply only when that recovery service is configured:
 
 The recovery service uses schedule `* * * * *` (every minute, UTC), build `npm ci --include=dev`, and start `npm run jobs:reconcile`. Each run processes at most ten due jobs serially, respects backoff and persisted leases, and exits. It can query an existing confirmed provider task and finish its delivery; it cannot submit a generation.
 
@@ -70,7 +78,7 @@ Render permits one active run per cron job and delays a scheduled run while one 
 3. Open the existing bedroom. Check all three genuine models, move/save/reopen, preview and wallpaper. Confirm Cloudinary requests succeed in the browser with correct textures.
 4. Publish with a captured cover, open the share link as a guest and then as another signed-in account, and remix. Confirm attribution and that private edits leave the published snapshot unchanged.
 5. Open the configured challenge. Any signed-in account can start and submit during its submission window. Voting opens afterward; self-votes are rejected. Do not change real event windows merely to test results; automated isolated tests cover those transitions.
-6. For a new **explicitly authorized** generation, close the studio after submission and confirm the scheduled worker completes the existing job. Do not generate again just to retry delivery. Existing-model/checkpoint checks require no new generation credits.
+6. For a new **explicitly authorized** generation on Free, keep the studio open and confirm the existing job reaches ready. If using the optional paid cron, also close the studio after submission and confirm the worker completes it. Do not generate again just to retry delivery. Existing-model/checkpoint checks require no new generation credits.
 7. Check `/robots.txt`, `/sitemap.xml`, `/opengraph-image`, canonical URLs and private noindex pages using the actual origin.
 8. Record the public URL, observed worker runs and actual browser results in `docs/DEPLOYMENT.md`. Until then deployment remains unverified.
 
@@ -90,4 +98,4 @@ For an existing checkout with configured secrets, skip the copy step. To run one
 node --env-file=.env.local --conditions=react-server --import tsx scripts/reconcile-generations.ts
 ```
 
-Official references checked: [Next.js on Render](https://render.com/docs/deploy-nextjs-app), [Blueprint specification](https://render.com/docs/blueprint-spec), [cron jobs](https://render.com/docs/cronjobs), [outbound IP ranges](https://render.com/docs/outbound-ip-addresses), [Node version selection](https://render.com/docs/node-version).
+Official references checked: [Free service limits](https://render.com/docs/free), [pre-deploy availability](https://render.com/docs/deploys#pre-deploy-command), [Next.js on Render](https://render.com/docs/deploy-nextjs-app), [Blueprint specification](https://render.com/docs/blueprint-spec), [cron jobs](https://render.com/docs/cronjobs), [outbound IP ranges](https://render.com/docs/outbound-ip-addresses), [Node version selection](https://render.com/docs/node-version).

@@ -1,6 +1,6 @@
 # Deployment
 
-No deployment has been performed. There is no verified public demo URL. The prepared Render web-service/cron Blueprint and exact dashboard steps are in [RENDER_SETUP.md](RENDER_SETUP.md).
+No deployment has been performed. There is no verified public demo URL. The default free Render web-service Blueprint and optional paid web-service/cron Blueprint and exact dashboard steps are in [RENDER_SETUP.md](RENDER_SETUP.md).
 
 ## Runtime and providers
 
@@ -40,3 +40,5 @@ Optional server secrets: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Register
 ## Search metadata
 
 Set SITE_URL to the final HTTPS application origin before build and runtime. Use a separate non-indexable origin for development/preview. Verify `/robots.txt`, `/sitemap.xml`, `/opengraph-image`, per-page canonical/Open Graph tags and private noindex headers after deployment. Dynamic sitemap queries need MongoDB; a database failure produces a server error instead of a misleading empty public-content sitemap. Search Console ownership verification and actual search indexing have not been performed. No analytics credentials are required.
+
+Free-instance update: `render.yaml` now deploys only a free web service. Leave Pre-deploy blank and use Start Command `npm run db:indexes:hosted && npm run start:render`. Optional `render-paid.yaml` retains the paid pre-deploy/cron configuration. Free-only deployment requires studio polling or an explicit local recovery pass; unattended scheduled completion is not configured. See RENDER_SETUP.md for idle spin-down and provider-output expiry limits.

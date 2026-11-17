@@ -69,3 +69,5 @@ Asset owners explicitly attest remix rights before enabling reuse; this permissi
 Use Render's Node web service plus separate scheduled recovery job, external MongoDB and Cloudinary. Keep current tested Node version pinned; verify actual Render provisioning separately. Render setup is prepared, not deployed.
 
 Disable Next.js's optional automatic agent-rules insertion (`agentRules:false`, verified in the installed Next.js official reference) to preserve the root implementation contract exactly. Read bundled version-specific docs directly. Health checks ping MongoDB rather than trusting a previously resolved connection promise.
+
+Free-instance deployment update: the user selected Render Free. The default `render.yaml` now contains a free web service only, with index creation in Start Command because pre-deploy is unavailable. Preserve the earlier paid web/cron configuration separately in `render-paid.yaml`. No scheduled recovery is implied for the free-only deployment; use studio polling/reopen or the explicit local CLI.

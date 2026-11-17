@@ -1,0 +1,72 @@
+# Configure secrets in the Render dashboard; this file contains names only.
+services:
+  - type: web
+    name: buildo
+    runtime: node
+    plan: 1c-2g
+    buildCommand: npm ci --include=dev && npm run build
+    preDeployCommand: npm run db:indexes:hosted
+    startCommand: npm run start:render
+    healthCheckPath: /api/health
+    maxShutdownDelaySeconds: 180
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        sync: false
+      - key: BETTER_AUTH_URL
+        sync: false
+      - key: SITE_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: LUX3D_API_KEY
+        sync: false
+      - key: LUX3D_DOWNLOAD_HOSTS
+        value: qhsmodel.kujiale.com
+  - type: cron
+    name: buildo-generation-recovery
+    runtime: node
+    plan: 1c-2g
+    schedule: "* * * * *"
+    buildCommand: npm ci --include=dev
+    startCommand: npm run jobs:reconcile
+    autoDeployTrigger: off
+    envVars:
+      - key: MONGODB_URI
+        fromService:
+          type: web
+          name: buildo
+          envVarKey: MONGODB_URI
+      - key: CLOUDINARY_CLOUD_NAME
+        fromService:
+          type: web
+          name: buildo
+          envVarKey: CLOUDINARY_CLOUD_NAME
+      - key: CLOUDINARY_API_KEY
+        fromService:
+          type: web
+          name: buildo
+          envVarKey: CLOUDINARY_API_KEY
+      - key: CLOUDINARY_API_SECRET
+        fromService:
+          type: web
+          name: buildo
+          envVarKey: CLOUDINARY_API_SECRET
+      - key: LUX3D_API_KEY
+        fromService:
+          type: web
+          name: buildo
+          envVarKey: LUX3D_API_KEY
+      - key: LUX3D_DOWNLOAD_HOSTS
+        fromService:
+          type: web
+          name: buildo
+          envVarKey: LUX3D_DOWNLOAD_HOSTS
