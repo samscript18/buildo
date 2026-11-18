@@ -6,7 +6,12 @@ import { ownProject } from "./projects";
 import { body, id, pagination, rate } from "./http";
 import { configured, fail } from "./errors";
 import { createLux, queryLux } from "./lux3d";
-import { downloadModel, uploadModel, verifyModelDelivery } from "./storage";
+import {
+  downloadModel,
+  uploadModel,
+  verifyModelDelivery,
+  assertModelStorage,
+} from "./storage";
 import { generationFailure, type TransferStage } from "./generation-failures";
 import type { JobRecord } from "./models";
 export function generationView(record: JobRecord) {
@@ -89,7 +94,9 @@ export async function generationCollection(
   configured("CLOUDINARY_CLOUD_NAME");
   configured("CLOUDINARY_API_KEY");
   configured("CLOUDINARY_API_SECRET");
+  configured("LUX3D_DOWNLOAD_HOSTS");
   await rate(`generation:${user.id}`, 4, 3600);
+  await assertModelStorage();
   const job = await Job.create({
     ...input,
     ownerId: user.id,
@@ -337,7 +344,7 @@ export async function generationItem(jobId: string, user: { id: string }) {
     lease.nextPollAt = new Date(
       Date.now() + Math.min(15 * 60000, 30000 * 2 ** Math.min(retries - 1, 5)),
     );
-    console.error("Generation recovery paused", {
+    console.error("Generation delivery attempt failed", {
       jobId: String(lease._id),
       ...failure,
     });

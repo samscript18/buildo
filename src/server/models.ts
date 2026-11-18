@@ -38,6 +38,7 @@ const assetSchema = new Schema(
     vertices: Number,
     texturePixels: Number,
     sha256: String,
+    deliveryPreparation: Schema.Types.Mixed,
     bounds: Schema.Types.Mixed,
     normalization: Schema.Types.Mixed,
     status: { type: String, default: "ready" },
@@ -170,6 +171,7 @@ export interface AssetRecord extends Base {
   vertices: number;
   texturePixels: number;
   sha256: string;
+  deliveryPreparation?: import("./model-preparation").ModelPreparation;
   bounds: unknown;
   normalization: { scale: number; offset: [number, number, number] };
   status: string;

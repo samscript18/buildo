@@ -148,7 +148,11 @@ function Generation({
         .slice(0, 4)
         .map((j) => (
           <div key={j.id} className="notice">
-            <strong>{j.state.replace("_", " ")}</strong>
+            <strong>
+              {j.state === "transfer_failed" && j.failure?.retryable
+                ? "Retrying delivery"
+                : j.state.replace("_", " ")}
+            </strong>
             <p className="subtle">{j.prompt}</p>
             {j.safeError && <p>{j.safeError}</p>}
             {j.failure?.reference && (

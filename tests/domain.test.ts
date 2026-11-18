@@ -12,6 +12,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { defaultScene } from "../src/lib/scene";
 vi.mock("../src/server/storage", () => ({
+  assertModelStorage: vi.fn(async () => {}),
   uploadCover: vi.fn(),
   uploadModel: vi.fn(async () => {
     throw new Error("simulated transfer failure");
@@ -53,6 +54,7 @@ import {
   uploadModel,
   downloadModel,
   verifyModelDelivery,
+  assertModelStorage,
 } from "../src/server/storage";
 import { AppError } from "../src/server/errors";
 import { allowAssetRemix } from "../src/server/assets";
@@ -82,6 +84,7 @@ beforeEach(async () => {
     .mockReset()
     .mockRejectedValue(new Error("simulated transfer failure"));
   vi.mocked(verifyModelDelivery).mockReset().mockResolvedValue();
+  vi.mocked(assertModelStorage).mockReset().mockResolvedValue();
 });
 afterAll(async () => {
   await mongoose.disconnect();
@@ -298,6 +301,32 @@ describe("database invariants (isolated disposable MongoDB only)", () => {
         alice,
       ),
     ).rejects.toMatchObject({ code: "IDEMPOTENCY" });
+  });
+  it("blocks a paid generation before creating its intent when storage preflight fails", async () => {
+    const { p } = await setup();
+    for (const key of [
+      "LUX3D_API_KEY",
+      "CLOUDINARY_CLOUD_NAME",
+      "CLOUDINARY_API_KEY",
+      "CLOUDINARY_API_SECRET",
+      "LUX3D_DOWNLOAD_HOSTS",
+    ])
+      process.env[key] = "TEST_ONLY";
+    vi.mocked(assertModelStorage).mockRejectedValue(
+      new AppError(503, "STORAGE_AUTH", "Storage credentials need attention."),
+    );
+    await expect(
+      generationCollection(
+        request({
+          projectId: String(p._id),
+          prompt: "Test isolated vase",
+          requestKey: crypto.randomUUID(),
+        }),
+        alice,
+      ),
+    ).rejects.toMatchObject({ code: "STORAGE_AUTH" });
+    expect(createLux).not.toHaveBeenCalled();
+    expect(await Job.countDocuments()).toBe(0);
   });
   it("keeps failed transfers recoverable without generating again", async () => {
     const { p } = await setup();

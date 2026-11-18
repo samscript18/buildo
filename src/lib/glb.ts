@@ -1,4 +1,5 @@
 import { NodeIO } from "@gltf-transform/core";
+import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 import { getBounds } from "@gltf-transform/functions";
 export const MAX_MODEL_BYTES = 25 * 1024 * 1024;
 export async function inspectGlb(bytes: Uint8Array) {
@@ -35,7 +36,9 @@ export async function inspectGlb(bytes: Uint8Array) {
     );
   if ((json.nodes || []).length > 2000 || (json.meshes || []).length > 300)
     throw new Error("This model has too many nodes or meshes.");
-  const doc = await new NodeIO().readBinary(bytes);
+  const doc = await new NodeIO()
+    .registerExtensions(ALL_EXTENSIONS)
+    .readBinary(bytes);
   const root = doc.getRoot();
   if (root.listSkins().length || root.listAnimations().length)
     throw new Error("Import a static, unrigged GLB.");

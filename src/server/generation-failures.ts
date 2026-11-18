@@ -3,6 +3,7 @@ export type TransferStage =
   | "provider_status"
   | "download"
   | "validate"
+  | "optimize"
   | "upload"
   | "verify_delivery"
   | "persist_asset";
@@ -38,12 +39,17 @@ export function generationFailure(error: unknown, stage: TransferStage) {
       "INVALID_MODEL",
       "OUTPUT_FORMAT",
       "MODEL_SIZE",
+      "STORAGE_CONFIGURATION",
+      "STORAGE_AUTH",
+      "STORAGE_QUOTA",
+      "STORAGE_SIZE_LIMIT",
     ].includes(code) &&
     !(status >= 400 && status < 500 && status !== 408 && status !== 429);
   const label = {
     provider_status: "Checking the generated model",
     download: "Downloading the generated model",
     validate: "Checking the model format",
+    optimize: "Preparing the model for storage",
     upload: "Storing the model",
     verify_delivery: "Verifying stored model delivery",
     persist_asset: "Adding the model to your library",
@@ -51,8 +57,15 @@ export function generationFailure(error: unknown, stage: TransferStage) {
   return {
     code,
     retryable,
-    message: retryable
-      ? `${label} was interrupted. Delivery will retry; no new generation will be submitted.`
-      : `${label} needs attention. Your generated model has been retained; contact the workspace administrator before trying again.`,
+    message:
+      code === "STORAGE_SIZE_LIMIT"
+        ? "The generated model is too large for this storage account even after texture optimisation. Contact the workspace administrator to finish delivery; generating another copy is not needed."
+        : ["STORAGE_AUTH", "STORAGE_QUOTA", "STORAGE_CONFIGURATION"].includes(
+              code,
+            )
+          ? "Model storage settings need attention. Your generation has completed; delivery can resume after the administrator corrects storage. Do not generate another copy."
+          : retryable
+            ? `${label} was interrupted. Delivery will retry; no new generation will be submitted.`
+            : `${label} needs attention. Your generated model has been retained; contact the workspace administrator before trying again.`,
   };
 }

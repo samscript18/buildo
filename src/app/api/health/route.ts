@@ -5,7 +5,7 @@ export async function GET() {
     const connection = await db();
     await connection.connection.db!.command({ ping: 1 });
     return Response.json(
-      { status: "ok" },
+      { status: "ok", release: process.env.RENDER_GIT_COMMIT?.slice(0, 12) },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {

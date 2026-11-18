@@ -5,8 +5,13 @@ import { lookup } from "node:dns/promises";
 import { request as httpsRequest } from "node:https";
 import { isIP } from "node:net";
 import { inspectGlb, MAX_MODEL_BYTES } from "@/lib/glb";
-import { configured, fail } from "./errors";
+import { AppError, configured, fail } from "./errors";
 import type { TransferStage } from "./generation-failures";
+import {
+  prepareModelForStorage,
+  rawUploadLimit,
+  type ModelPreparation,
+} from "./model-preparation";
 function cloud() {
   cloudinary.config({
     cloud_name: configured("CLOUDINARY_CLOUD_NAME"),
@@ -16,6 +21,73 @@ function cloud() {
   });
   return cloudinary;
 }
+// Classify provider text locally; never retain raw responses, signatures or credentials.
+export function storageUploadError(error: unknown) {
+  const detail = error as {
+    message?: string;
+    http_code?: number;
+    code?: string;
+    name?: string;
+  } | null;
+  const message = detail?.message || "";
+  if (/file size|too large|maximum.*size/i.test(message))
+    return new AppError(
+      413,
+      "STORAGE_SIZE_LIMIT",
+      "The prepared model exceeds this storage account's upload limit.",
+    );
+  if (
+    /signature|api.key|cloud.name|unauthoriz/i.test(message) ||
+    [401, 403].includes(detail?.http_code || 0)
+  )
+    return new AppError(
+      503,
+      "STORAGE_AUTH",
+      "Model storage credentials need attention. No new generation is needed.",
+    );
+  if (
+    /timeout|timed out/i.test(message) ||
+    detail?.http_code === 499 ||
+    /TIMEOUT|TIMEDOUT/.test(detail?.code || "") ||
+    /Abort|Timeout/.test(detail?.name || "")
+  )
+    return new AppError(
+      503,
+      "STORAGE_TIMEOUT",
+      "Model storage timed out. Delivery can retry the same generated model.",
+    );
+  if (/quota|credits.*exceed|limit.*exceed/i.test(message))
+    return new AppError(
+      503,
+      "STORAGE_QUOTA",
+      "Model storage capacity needs attention. No new generation is needed.",
+    );
+  return new AppError(
+    503,
+    detail?.http_code ? `HTTP_${detail.http_code}` : "STORAGE_UNAVAILABLE",
+    "Model storage is temporarily unavailable.",
+  );
+}
+let storageCheck: { key: string; until: number } | undefined;
+export async function assertModelStorage() {
+  rawUploadLimit();
+  const key = createHash("sha256")
+    .update(
+      [
+        configured("CLOUDINARY_CLOUD_NAME"),
+        configured("CLOUDINARY_API_KEY"),
+        configured("CLOUDINARY_API_SECRET"),
+      ].join("\0"),
+    )
+    .digest("hex");
+  if (storageCheck?.key === key && storageCheck.until > Date.now()) return;
+  try {
+    await cloud().api.ping({ timeout: 10000 });
+    storageCheck = { key, until: Date.now() + 60000 };
+  } catch (error) {
+    throw storageUploadError(error);
+  }
+}
 export async function uploadModel(
   bytes: Uint8Array,
   ownerId: string,
@@ -23,14 +95,12 @@ export async function uploadModel(
     stage: TransferStage,
     checkpoint?: ModelCheckpoint,
   ) => Promise<void>,
-) {
+): Promise<ModelCheckpoint> {
   await onStage?.("validate");
-  let inspected;
-  try {
-    inspected = await inspectGlb(bytes);
-  } catch (e) {
-    fail(400, "INVALID_MODEL", e instanceof Error ? e.message : "Invalid GLB.");
-  }
+  await onStage?.("optimize");
+  const prepared = await prepareModelForStorage(bytes);
+  bytes = prepared.bytes;
+  const inspected = prepared.inspection;
   const sha256 = createHash("sha256").update(bytes).digest("hex");
   const publicId = `buildo/${ownerId}/${sha256}.glb`;
   await onStage?.("upload");
@@ -42,8 +112,9 @@ export async function uploadModel(
         overwrite: false,
         timeout: 60000,
       },
-      (e, r) => (e || !r ? reject(e) : resolve(r)),
+      (e, r) => (e || !r ? reject(storageUploadError(e)) : resolve(r)),
     );
+    stream.once("error", (error) => reject(storageUploadError(error)));
     stream.end(Buffer.from(bytes));
   });
   if (!result.secure_url.startsWith("https://res.cloudinary.com/"))
@@ -56,6 +127,7 @@ export async function uploadModel(
     format: "glb",
     bytes: result.bytes,
     sha256,
+    deliveryPreparation: prepared.preparation,
   };
   await onStage?.("verify_delivery", checkpoint);
   await verifyModelDelivery(checkpoint);
@@ -68,6 +140,7 @@ export type ModelCheckpoint = Awaited<ReturnType<typeof inspectGlb>> & {
   resourceType: UploadApiResponse["resource_type"];
   format: string;
   bytes: number;
+  deliveryPreparation?: ModelPreparation;
 };
 export async function verifyModelDelivery(checkpoint: ModelCheckpoint) {
   const delivered = await boundedDownload(checkpoint.secureUrl, [

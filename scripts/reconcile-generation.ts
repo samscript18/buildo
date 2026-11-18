@@ -2,7 +2,10 @@
 import mongoose from "mongoose";
 import { db } from "../src/server/db";
 import { Job, Asset } from "../src/server/models";
-import { generationItem } from "../src/server/generations";
+import {
+  generationItem,
+  retryGenerationTransfer,
+} from "../src/server/generations";
 import { queryLux } from "../src/server/lux3d";
 import { downloadModel } from "../src/server/storage";
 import { inspectGlb } from "../src/lib/glb";
@@ -36,7 +39,9 @@ try {
     const model = await inspectGlb(bytes);
     console.log(JSON.stringify({ stage: "validated", model }));
   } else {
-    const result = await generationItem(jobId, { id: ownerId });
+    const result = process.argv.includes("--retry-delivery")
+      ? await retryGenerationTransfer(jobId, { id: ownerId })
+      : await generationItem(jobId, { id: ownerId });
     const asset = result.assetId
       ? await Asset.findOne({ _id: result.assetId, ownerId }).lean()
       : null;
@@ -57,6 +62,7 @@ try {
                 sha256: asset.sha256,
                 bounds: asset.bounds,
                 normalization: asset.normalization,
+                deliveryPreparation: asset.deliveryPreparation,
               }
             : undefined,
         },

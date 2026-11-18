@@ -33,7 +33,8 @@ export async function route(request: Request, path: string[]) {
         storage: !!(
           process.env.CLOUDINARY_CLOUD_NAME &&
           process.env.CLOUDINARY_API_KEY &&
-          process.env.CLOUDINARY_API_SECRET
+          process.env.CLOUDINARY_API_SECRET &&
+          process.env.LUX3D_DOWNLOAD_HOSTS
         ),
         generation: !!(
           process.env.LUX3D_API_KEY &&
