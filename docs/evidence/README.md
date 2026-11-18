@@ -20,3 +20,9 @@ See [the detailed evidence record](../STUDIO_BEDROOM_EVIDENCE.md) for commands, 
 - [Real authorized community setup](real-community-setup.json): real publication/challenge/entry IDs, unchanged source revision, remix permission, fixed UTC windows; zero created test accounts or votes.
 
 See [COMMUNITY_RECOVERY_EVIDENCE.md](../COMMUNITY_RECOVERY_EVIDENCE.md).
+
+## November 18: recovered vase
+
+- [Exact failure and recovery](vase-recovery.json): Cloudinary rejected the original 16,403,964-byte GLB above its 10,485,760-byte raw limit; prepared model is 8,489,196 bytes. Every geometry attribute/index and each texture’s alpha presence were compared.
+- [Actual recovered vase after save/reload](vase-restored.png), [browser verification](vase-browser-verification.json), and [exact scene comparison](vase-scene-comparison.json): genuine model and Cloudinary delivery in an isolated disposable room. No new paid generation, publication or real-room changes.
+- Details: [TRANSFER_SIZE_FIX_EVIDENCE.md](../TRANSFER_SIZE_FIX_EVIDENCE.md).

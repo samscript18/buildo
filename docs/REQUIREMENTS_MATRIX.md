@@ -81,3 +81,12 @@ Updated 2026-11-17. “Implemented” means code exists; evidence distinguishes 
 | Real challenge open to all accounts                           | Created and first real owner entry submitted                               | challenge 6afc1474d89aa309674af843; submissions end Nov 18, 18:00 Lagos; voting ends Nov 19, 10:00 Lagos                   |
 | Independent human participation                               | Pending                                                                    | No allowlist; no synthetic public accounts or votes. Two-account technical journey passed only in isolated DB              |
 | Render setup                                                  | Prepared against official current docs; deployment unverified              | render.yaml, .node-version, health route, RENDER_SETUP.md                                                                  |
+
+## November 18: storage-size adaptation and recovery
+
+| Feature                             | Status                                                                      | Evidence / limits                                                                                                                         |
+| ----------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Cloudinary raw size compatibility   | Fixed; live vase recovery verified                                          | model-preparation.ts; 16,403,964 source bytes → 8,489,196 delivered bytes below actual 10 MiB cap; unchanged geometry and preserved alpha |
+| Paid generation storage preflight   | Implemented; live credential check and isolated rejection regression passed | assertModelStorage before provider creation; no charge when preflight rejects; not a future quota/availability guarantee                  |
+| Safe actionable storage diagnostics | Implemented / regression verified                                           | size/auth/quota vs retryable timeout codes; HTTP 499 handled; no raw provider secrets retained                                            |
+| Current Render host                 | Health HTTP 200 verified                                                    | buildo-7rsf.onrender.com; corrective release and fresh deployed generation not yet verified                                               |

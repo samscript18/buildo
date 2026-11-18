@@ -1,0 +1,56 @@
+{
+  "saved": {
+    "schemaVersion": 1,
+    "environment": "procedural",
+    "room": {
+      "width": 5,
+      "depth": 4,
+      "height": 2.8,
+      "floor": "#d9c3a6",
+      "wall": "#f0ebe1",
+      "wallpaper": "arches",
+      "wallpaperWall": "back"
+    },
+    "lighting": "daylight",
+    "camera": {
+      "position": [7, 6, 7],
+      "target": [0, 0, 0]
+    },
+    "objects": [
+      {
+        "instanceId": "d4af1432-a327-4364-a917-5012962ad320",
+        "assetId": "6afdf4340231af961d6850c8",
+        "position": [1.1, 0, 0],
+        "rotation": [0, 0.5235987755982988, 0],
+        "scale": [0.8, 0.8, 0.8]
+      }
+    ]
+  },
+  "reopened": {
+    "schemaVersion": 1,
+    "environment": "procedural",
+    "room": {
+      "width": 5,
+      "depth": 4,
+      "height": 2.8,
+      "floor": "#d9c3a6",
+      "wall": "#f0ebe1",
+      "wallpaper": "arches",
+      "wallpaperWall": "back"
+    },
+    "lighting": "daylight",
+    "camera": {
+      "position": [7, 6, 7],
+      "target": [0, 0, 0]
+    },
+    "objects": [
+      {
+        "instanceId": "d4af1432-a327-4364-a917-5012962ad320",
+        "assetId": "6afdf4340231af961d6850c8",
+        "position": [1.1, 0, 0],
+        "rotation": [0, 0.5235987755982988, 0],
+        "scale": [0.8, 0.8, 0.8]
+      }
+    ]
+  }
+}

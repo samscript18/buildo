@@ -4,8 +4,8 @@
     {
       "file": "README.md",
       "source": "Repository evidence index",
-      "bytes": 2777,
-      "sha256": "ce44875f016c64c80da537e675b2f42247c15e56f6cdb442d6c979544fb516b3"
+      "bytes": 3453,
+      "sha256": "0f25a21ee590ae4a1db0180cefad5871491cbfd767b6f0e2169fe8469cbc27fb"
     },
     {
       "file": "bed-controls-move.png",
@@ -114,6 +114,30 @@
       "source": "artifacts/live-model-browser/6af78eae5fc6d2fc20c801d6/verification.json",
       "bytes": 1127,
       "sha256": "368e0ff8205241dc868c02d4126016fbd1bd01b78e7137480157fa6a5f05dc28"
+    },
+    {
+      "file": "vase-browser-verification.json",
+      "source": "Actual recovered Lux3D vase; November 18 storage failure verification",
+      "bytes": 1127,
+      "sha256": "3a1a88541a56032e9b69cc49fcfc8f3548756ab65daaf0b6d0b3628f3ad787c6"
+    },
+    {
+      "file": "vase-recovery.json",
+      "source": "Actual recovered Lux3D vase; November 18 storage failure verification",
+      "bytes": 1013,
+      "sha256": "127f94cfddb810361daa4e7a7d15869b6af306108e6cf5dcf920b9b1765b4dec"
+    },
+    {
+      "file": "vase-restored.png",
+      "source": "Actual recovered Lux3D vase; November 18 storage failure verification",
+      "bytes": 204292,
+      "sha256": "715caee7bdf4f2c3ef18d8ecb7f27e691304440b766f23594a75761c26aad320"
+    },
+    {
+      "file": "vase-scene-comparison.json",
+      "source": "Actual recovered Lux3D vase; November 18 storage failure verification",
+      "bytes": 1268,
+      "sha256": "51d9c5dc0ee0906e124a9aa5baeb65d68f028086e78fa7467b498dfe79ab78ad"
     }
   ]
 }

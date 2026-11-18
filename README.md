@@ -1,4 +1,4 @@
-Current follow-up: transfer checkpoint recovery and an unattended recovery CLI are verified with genuine Cloudinary models. The authorized bedroom is published/remixable and Small Space, Big Ideas is open to all signed-in accounts. [Evidence](docs/COMMUNITY_RECOVERY_EVIDENCE.md) · [Exact Render setup](docs/RENDER_SETUP.md). Render deployment and independent human participation remain pending.
+Current follow-up: the recurring vase upload rejection is diagnosed and fixed. Oversized GLBs now receive automatic texture preparation for Cloudinary’s actual raw-file limit; the original vase task recovered without another paid generation. [Exact cause, evidence and limits](docs/TRANSFER_SIZE_FIX_EVIDENCE.md) · [Render setup](docs/RENDER_SETUP.md). Public host: https://buildo-7rsf.onrender.com; deployment of the corrective release still needs verification.
 
 # Buildo
 
@@ -14,7 +14,7 @@ Imagine it. Build it. Explore it.
 
 A Next.js fullstack spatial design app built from the root AGENTS.md brief. Includes real account flows, procedural mesh rooms, a transform editor, MongoDB scenes, Lux3D job/import adapters, Cloudinary storage, immutable public snapshots, attributed remixing, and admin-created challenges with submissions and voting.
 
-**The live Lux3D → Cloudinary → browser → MongoDB integration gate is not proven.** No provider credentials or genuine asset were supplied. Automated tests use disposable MongoDB and explicitly labeled local fixtures. They do not prove provider integration. There is no production fixture mode or seeded community activity.
+The live Lux3D → Cloudinary → browser → MongoDB integration gate has genuine model evidence, including the recovered vase, bed, bedside table and TV console. Separate automated tests use disposable MongoDB and explicitly labeled fixtures; those fixtures are not provider or community evidence. There is no production fixture mode or seeded community activity. See docs/INTEGRATION_VERIFICATION.md.
 
 ## Setup
 
@@ -32,7 +32,7 @@ Fill the ignored `.env.local` locally:
 - `BETTER_AUTH_URL`: `http://localhost:3000` for local use, exact HTTPS app origin for production.
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: server-side Cloudinary credentials.
 - `LUX3D_API_KEY`: Aholo API key for object generation. Not needed for user-supplied Lux3D GLB import.
-- `LUX3D_DOWNLOAD_HOSTS`: comma-separated exact trusted output storage hostnames, obtained from genuine provider output. It can be set after submission; failed transfers retain the observed `outputHost` in the private generation job for operator review and delivery retry. No wildcards, paths, IP addresses or invented hosts. Downloads reject redirects and private addresses.
+- `LUX3D_DOWNLOAD_HOSTS`: comma-separated exact trusted output storage hostnames, obtained from genuine provider output. It must be configured before a new paid submission. Future unrecognized output hosts are retained as `outputHost` for operator review and delivery retry. No wildcards, paths, IP addresses or invented hosts. Downloads reject redirects and private addresses.
 
 ```bash
 npm run db:indexes
@@ -84,10 +84,10 @@ Next.js route handlers are the only backend; no Express/Nest service. Domain dat
 
 ## Known limits
 
-- Real generation, output hostnames, Cloudinary raw browser delivery/textures and production MongoDB save/reopen still require live evidence. Imported provenance is user-attested; it is not provider-verified when no API key is available.
+- Genuine generation, observed output hostnames, Cloudinary browser delivery/textures and exact scene save/reopen are verified with the evidence distinctions in docs/INTEGRATION_VERIFICATION.md. Imported provenance is user-attested; it is not provider-verified when no API key is available.
 - Only static, uncompressed, self-contained GLB 2.0 meshes are accepted. No automatic ZIP extraction, external textures, rigged assets or required glTF extensions. No substitute models are presented as generations.
 - Jobs reconcile through bounded status requests. The studio polls while open; dashboard has refresh actions. No always-running worker is assumed. Uncertain paid creation is held for operator review and never automatically resubmitted.
-- Scene budgets are validation defaults, not measured performance claims: 80 instances, 1.5 million total vertices, 100MB unique source bytes, 48 megapixels unique textures; each file ≤25MB, textures ≤4096px and 24 megapixels total. Real laptop furnished-room performance is unmeasured.
+- Scene budgets are validation defaults, not measured performance claims: 80 instances, 1.5 million total vertices, 100MB unique source bytes, 48 megapixels unique textures; each source file ≤25MB, textures ≤4096px and 24 megapixels total. Stored models default to the observed 10 MiB Cloudinary raw cap; oversized sources receive texture preparation. Real laptop furnished-room performance is unmeasured.
 - Public walkthrough provides free movement without collision detection, with orbit/pinch as the touch alternative. Standard PBR tinting does not retexture arbitrary models.
 - Capture renders one frame without keeping `preserveDrawingBuffer` enabled. Actual Cloudinary viewport-cover upload and delivered PNG are verified; see docs/COMMUNITY_RECOVERY_EVIDENCE.md.
 - Email verification and password recovery delivery are not configured. No collaboration, payments, subscriptions, marketplace, invented winners, SpatialGen/Viewer compatibility claim, deployed URL or final submission report.

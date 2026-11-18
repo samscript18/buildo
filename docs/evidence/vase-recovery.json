@@ -1,0 +1,35 @@
+{
+  "taskId": "8354990",
+  "jobId": "6afdee4ee2029e789a12741e",
+  "assetId": "6afdf28a6156b5211616c525",
+  "failureReference": "439b1021-12ef-49b8-88b8-08279190025e",
+  "observedCloudinaryHttpStatus": 400,
+  "originalBytes": 16403964,
+  "observedAccountLimitBytes": 10485760,
+  "deliveredBytes": 8489196,
+  "originalSha256": "bc17decff10a24fa33512ca2bea18aaf8301acd3550fd6622be6fed6f3caf0e2",
+  "deliveredSha256": "9a97e3273744b3ccbc8e1bd22ea2adf8d2a4a5498a36349a756f48a8819c5b5b",
+  "allGeometryAttributesAndIndicesUnchanged": true,
+  "textures": [
+    {
+      "source": [2048, 2048],
+      "delivered": [1024, 1024],
+      "alphaPreserved": true,
+      "hasAlpha": true
+    },
+    {
+      "source": [2048, 2048],
+      "delivered": [1024, 1024],
+      "alphaPreserved": true,
+      "hasAlpha": false
+    },
+    {
+      "source": [2048, 2048],
+      "delivered": [1024, 1024],
+      "alphaPreserved": true,
+      "hasAlpha": true
+    }
+  ],
+  "newPaidGenerations": 0,
+  "checkedAt": "2026-11-18T18:54:20.897Z"
+}

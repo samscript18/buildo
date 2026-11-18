@@ -99,3 +99,9 @@ node --env-file=.env.local --conditions=react-server --import tsx scripts/reconc
 ```
 
 Official references checked: [Free service limits](https://render.com/docs/free), [pre-deploy availability](https://render.com/docs/deploys#pre-deploy-command), [Next.js on Render](https://render.com/docs/deploy-nextjs-app), [Blueprint specification](https://render.com/docs/blueprint-spec), [cron jobs](https://render.com/docs/cronjobs), [outbound IP ranges](https://render.com/docs/outbound-ip-addresses), [Node version selection](https://render.com/docs/node-version).
+
+## November 18 storage fix for the current deployment
+
+Your host is `https://buildo-7rsf.onrender.com`. Set `SITE_URL` and `BETTER_AUTH_URL` to that origin on Render, retaining localhost values only in local development. Deploy the latest pushed fix. No additional secret or paid instance is required for automatic texture preparation: its default raw upload cap matches the observed 10 MiB Cloudinary limit. Do not increase it to 25 MiB unless Cloudinary actually allows that upload size. A recovered model already in the shared database is available after refreshing even before deployment; **future uploads require the updated release**.
+
+After deployment, `/api/health` returns `release` containing the first twelve characters of the deployed git commit. Compare it with the intended GitHub commit. Check the recovered vase in Assets and add it to the studio; Buildo does not automatically alter an existing saved room when a job becomes ready.
